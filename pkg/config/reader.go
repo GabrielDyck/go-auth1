@@ -6,22 +6,29 @@ import (
 	"io/ioutil"
 )
 
-type Configuration struct{
-	Port string `json:"port"`
+type mysql struct {
+	Address  string `json:"address"`
+	Username string `json:"username"`
+	Schema   string `json:"schema"`
 }
 
-func Read() Configuration{
+type Configuration struct {
+	Port  string `json:"port"`
+	Mysql mysql  `json:"mysql"`
+}
+
+func Read() Configuration {
 	var configuration Configuration
 
-	data, err:= ioutil.ReadFile("./pkg/config/resources/application.json")
+	data, err := ioutil.ReadFile("./pkg/config/resources/application.json")
 
-	if err != nil{
-		panic(fmt.Sprintf("couldn't read configuration: %v",err))
+	if err != nil {
+		panic(fmt.Sprintf("couldn't read configuration: %v", err))
 	}
 
-	err= json.Unmarshal(data, &configuration)
-	if err != nil{
-		panic(fmt.Sprintf("couldn't unmarshall configuration: %v",err))
+	err = json.Unmarshal(data, &configuration)
+	if err != nil {
+		panic(fmt.Sprintf("couldn't unmarshall configuration: %v", err))
 	}
 
 	return configuration
