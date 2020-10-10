@@ -11,6 +11,7 @@ func AddRoutes(router *mux.Router){
 	addHealthCheck(router)
 	addSignIn(router)
 	addSignUp(router)
+	addProfileRoutes(router)
 }
 
 
