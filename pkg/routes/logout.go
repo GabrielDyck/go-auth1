@@ -2,6 +2,7 @@ package routes
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -13,24 +14,23 @@ const (
 func addLogout(router *mux.Router) {
 	router.HandleFunc(logout, func(writer http.ResponseWriter, request *http.Request) {
 
-
 		user := request.Header.Get("User")
 		token := request.Header.Get("Authorization")
-		err:= validateRequiredHeaders(user, token)
+		err := validateRequiredHeaders(user, token)
 
 		if err != nil {
-			wrapBadRequest(writer,err)
+			wrapBadRequest(writer, err)
 		}
 
 	}).Methods("POST")
 }
 
-func validateRequiredHeaders(user, token string) error {
-	if len(user) == 0 {
-		return errors.New("user is not present")
-	} else if len(token) == 0 {
-		return errors.New("token is not present")
-	}
+func validateRequiredHeaders(headers ...string) error {
 
+	for _, header := range headers {
+		if header == "" {
+			return errors.New(fmt.Sprintf("%s is not present", header))
+		}
+	}
 	return nil
 }

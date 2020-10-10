@@ -7,11 +7,18 @@ import (
 	"net/http"
 )
 
+
+type OperationResult string
+
+const(
+	Error OperationResult = "ERROR"
+	Success OperationResult = "SUCCESS"
+)
 type UserSignReq struct {
 	Email string `json:"email"`
 	Password string`json:"password"`
+	AccountType string `json:"account_type"`
 }
-
 
 type ErrorMSG struct {
 	Reason string `json:"reason"`

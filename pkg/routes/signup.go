@@ -1,18 +1,48 @@
 package routes
 
 import (
+	"auth1/pkg/mysql"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
 const (
-	signUp = "/signup"
+	signUpPath = "/signup"
 )
 
 
-func addSignUp(router *mux.Router) {
-	router.HandleFunc(signUp, func(writer http.ResponseWriter, request *http.Request) {
+
+type Service interface {
+	SignUp(req UserSignReq) bool
+}
+
+
+type Response struct {
+	Email  string          `json:"email"`
+	Result OperationResult `json:"result"`
+}
+
+type service struct {
+	db mysql.SignUp
+}
+
+
+func NewSignUpService(db mysql.SignUp) service {
+	return service{
+		db:db,
+	}
+}
+
+func (s *service) signUp(req UserSignReq) error {
+	return s.db.SignUpAccount(req.Email,req.Password,req.AccountType)
+}
+
+
+func addSignUp(router *mux.Router, 	client mysql.SignUp) {
+
+	service:= NewSignUpService(client)
+	router.HandleFunc(signUpPath, func(writer http.ResponseWriter, request *http.Request) {
 
 		var req UserSignReq
 		err := parseRequest(writer, request,&req)
@@ -20,6 +50,12 @@ func addSignUp(router *mux.Router) {
 			return
 		}
 		fmt.Println(req)
+		err = service.signUp(req)
+
+		if err !=nil{
+			wrapBadRequest(writer,err)
+		}
 
 	}).Methods("POST")
 }
+

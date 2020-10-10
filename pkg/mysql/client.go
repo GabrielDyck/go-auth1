@@ -8,7 +8,12 @@ import (
 )
 
 type Client interface {
+	SignUp
 	Connect()
+}
+
+type SignUp interface {
+	SignUpAccount(username, password, accountType string) error
 }
 
 type client struct {
@@ -34,6 +39,25 @@ func (c *client) Connect() {
 		panic(fmt.Sprintf("couldn't open mysql connection. %v", err))
 	}
 	c.db = db
+}
+
+func (c *client) SignUpAccount(username , password, accountType string) error{
+
+	stmt,err:= c.db.Prepare(
+		"INSERT INTO ACCOUNTS(USERNAME,PASSWORD,ACCOUNT_TYPE,CREATION_DATE)" +
+		"VALUES (?,?,?,NOW())")
+	if err != nil{
+		return err
+	}
+
+	result, err := stmt.Exec(username,password,accountType)
+
+	if err != nil {
+		return err
+	}
+	id,_ := result.LastInsertId()
+	fmt.Println(fmt.Sprintf("Created account: %s , type: %s, id: %d",username,accountType,id))
+	return nil
 }
 
 func (c *client) builtDatasourceName() string {

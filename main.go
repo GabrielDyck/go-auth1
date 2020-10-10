@@ -12,10 +12,10 @@ import (
 func main() {
 
 	configuration := config.Read()
-	app := app.SetUpApplication(configuration)
-	app.Client.Connect()
+	application := app.SetUpApplication(configuration)
+	application.Client.Connect()
 	var router = mux.NewRouter()
-	routes.AddRoutes(router)
+	routes.AddRoutes(router,application.Client)
 
 
 	err := http.ListenAndServe(configuration.Port, router)

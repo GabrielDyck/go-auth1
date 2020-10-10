@@ -1,16 +1,17 @@
 package routes
 
 import (
+	"auth1/pkg/mysql"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
 
-func AddRoutes(router *mux.Router){
+func AddRoutes(router *mux.Router,client mysql.Client){
 	router.Use(commonMiddleware)
 	addHealthCheck(router)
 	addSignIn(router)
-	addSignUp(router)
+	addSignUp(router, client)
 	addProfileRoutes(router)
 	addLogout(router)
 	addForgotPassword(router)
