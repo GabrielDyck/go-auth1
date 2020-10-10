@@ -51,24 +51,30 @@ func parseRequest(writer http.ResponseWriter, request *http.Request, bodyStruct 
 	body, err := ioutil.ReadAll(request.Body)
 
 	if err != nil {
-		wrapBadRequest(writer, err)
+		wrapBadRequestResponse(writer, err)
 		return err
 	}
 
 	err = json.Unmarshal(body, bodyStruct)
 
 	if err != nil {
-		wrapBadRequest(writer, err)
+		wrapBadRequestResponse(writer, err)
 	}
 	return err
 }
 
-func wrapBadRequest(writer http.ResponseWriter, err error) {
-	data, httpStatus := writeResponse(builtErrorBodyMsg(err), http.StatusBadRequest)
+func wrapResponse(writer http.ResponseWriter, err error, statusCode int) {
+	data, httpStatus := writeResponse(builtErrorBodyMsg(err), statusCode)
 	writer.WriteHeader(httpStatus)
 	_,err = writer.Write(data)
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+
+
+func wrapBadRequestResponse(writer http.ResponseWriter, err error) {
+	wrapResponse(writer,err,http.StatusBadRequest)
 }
 

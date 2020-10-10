@@ -19,7 +19,7 @@ func addLogout(router *mux.Router) {
 		err := validateRequiredHeaders(user, token)
 
 		if err != nil {
-			wrapBadRequest(writer, err)
+			wrapBadRequestResponse(writer, err)
 		}
 
 	}).Methods("POST")

@@ -39,7 +39,7 @@ func addProfileRoutes(router *mux.Router) {
 
 		err=validateRequiredFields(req)
 		if err !=nil{
-			wrapBadRequest(writer,err)
+			wrapBadRequestResponse(writer,err)
 			return
 		}
 

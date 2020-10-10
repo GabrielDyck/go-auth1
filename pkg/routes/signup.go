@@ -11,8 +11,6 @@ const (
 	signUpPath = "/signup"
 )
 
-
-
 type Service interface {
 	SignUp(req UserSignReq) bool
 }
@@ -53,7 +51,7 @@ func addSignUp(router *mux.Router, 	client mysql.SignUp) {
 		err = service.signUp(req)
 
 		if err !=nil{
-			wrapBadRequest(writer,err)
+			wrapBadRequestResponse(writer,err)
 		}
 
 	}).Methods("POST")
