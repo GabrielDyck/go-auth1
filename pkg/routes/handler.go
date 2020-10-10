@@ -14,6 +14,7 @@ func AddRoutes(router *mux.Router){
 	addProfileRoutes(router)
 	addLogout(router)
 	addForgotPassword(router)
+	addResetPassword(router)
 }
 
 
