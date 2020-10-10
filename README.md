@@ -1,6 +1,6 @@
 ## AUTH1 BACKEND
 
-### Development environmet setup
+### Development environment setup
 
 Set MYSQL_PASS environment value to establish connection to mysql.
 `

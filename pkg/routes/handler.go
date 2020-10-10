@@ -1,26 +1,15 @@
 package routes
 
 import (
-	"fmt"
-	"net/http"
+	"github.com/gorilla/mux"
 )
 
-const (
-	healthCheck = "/health-check"
-)
-func AddRoutes(){
-	addHealthCheck()
+
+func AddRoutes(router *mux.Router){
+	router.Use(commonMiddleware)
+	addHealthCheck(router)
+	addSignUp(router)
 }
 
 
 
-
-func addHealthCheck(){
-	http.HandleFunc(healthCheck, func(writer http.ResponseWriter, request *http.Request) {
-		writer.WriteHeader(http.StatusOK)
-		_,err:= writer.Write([]byte("OK"))
-		if err != nil {
-			fmt.Println(err)
-		}
-	})
-}
