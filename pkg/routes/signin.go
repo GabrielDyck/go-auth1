@@ -7,12 +7,12 @@ import (
 )
 
 const (
-	signUp = "/signup"
+	signIn = "/signin"
 )
 
 
-func addSignUp(router *mux.Router) {
-	router.HandleFunc(signUp, func(writer http.ResponseWriter, request *http.Request) {
+func addSignIn(router *mux.Router) {
+	router.HandleFunc(signIn, func(writer http.ResponseWriter, request *http.Request) {
 
 		var req UserSignReq
 		err := parseRequest(writer, request,&req)

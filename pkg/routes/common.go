@@ -3,8 +3,15 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
+
+type UserSignReq struct {
+	Email string `json:"email"`
+	Password string`json:"password"`
+}
+
 
 type ErrorMSG struct {
 	Reason string `json:"reason"`
@@ -29,13 +36,32 @@ func writeResponse(response interface{}, statusCode int)([]byte ,int) {
 
 func builtErrorBodyMsg(err error) ErrorMSG{
 	return ErrorMSG{Reason: err.Error()}
-
 }
 
 
-func commonMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-		next.ServeHTTP(w, r)
-	})
+
+func parseRequest(writer http.ResponseWriter, request *http.Request, bodyStruct interface {}) error {
+	body, err := ioutil.ReadAll(request.Body)
+
+	if err != nil {
+		wrapBadRequest(writer, err)
+		return err
+	}
+
+	err = json.Unmarshal(body, bodyStruct)
+
+	if err != nil {
+		wrapBadRequest(writer, err)
+	}
+	return err
 }
+
+func wrapBadRequest(writer http.ResponseWriter, err error) {
+	data, httpStatus := writeResponse(builtErrorBodyMsg(err), http.StatusBadRequest)
+	writer.WriteHeader(httpStatus)
+	_,err = writer.Write(data)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
