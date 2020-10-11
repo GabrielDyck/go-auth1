@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"auth1/pkg/mysql/model"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
@@ -10,16 +11,11 @@ import (
 )
 
 
-type OperationResult string
 
-const(
-	Error   OperationResult = "ERROR"
-	Success OperationResult = "SUCCESS"
-)
 type UserSignReq struct {
 	Email string `json:"email"`
 	Password string`json:"password"`
-	AccountType string `json:"account_type"`
+	AccountType model.AccountType `json:"account_type"`
 }
 
 type ErrorMSG struct {

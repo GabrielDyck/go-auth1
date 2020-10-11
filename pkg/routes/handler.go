@@ -2,6 +2,7 @@ package routes
 
 import (
 	"auth1/pkg/config"
+	"auth1/pkg/mail"
 	"auth1/pkg/mysql"
 	"auth1/pkg/routes/internal"
 	"errors"
@@ -21,14 +22,14 @@ func NewCustomRouter(client mysql.Client, configuration config.Configuration) Cu
 	}
 }
 
-func (c *CustomRouter) AddRoutes(router *mux.Router) {
+func (c *CustomRouter) AddRoutes(router *mux.Router, emailSender mail.Sender) {
 	router.Use(c.commonMiddleware)
 	internal.HealthCheck(router)
 	internal.SignIn(router, c.client, c.configuration.ExpirationDateInMin)
 	internal.SignUp(router, c.client)
 	internal.GetProfileInfo(router, c.client)
 	internal.Logout(router)
-	internal.ForgotPassword(router)
+	internal.ForgotPassword(router,c.client, emailSender)
 	internal.ResetPassword(router)
 	http.Handle("/",router)
 }

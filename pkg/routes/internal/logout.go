@@ -19,7 +19,7 @@ func Logout(router *mux.Router) {
 		err := validateRequiredHeaders(user, token)
 
 		if err != nil {
-			wrapBadRequestResponse(writer, err)
+			WrapBadRequestResponse(writer, err)
 		}
 
 	}).Methods("POST")

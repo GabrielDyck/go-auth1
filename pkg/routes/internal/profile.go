@@ -34,14 +34,14 @@ func GetProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 	router.HandleFunc(profile, func(writer http.ResponseWriter, request *http.Request) {
 		id,err  := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
-			wrapBadRequestResponse(writer, err)
+			WrapBadRequestResponse(writer, err)
 			return
 		}
 		fmt.Println(id)
 
 		account, err := service.getProfileInfo(int64(id))
 		if err != nil {
-			wrapBadRequestResponse(writer, err)
+			WrapBadRequestResponse(writer, err)
 			return
 		}
 		data, httpStatus := builtResponse(account, http.StatusOK)
@@ -58,7 +58,7 @@ func EditProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 	router.HandleFunc(profile, func(writer http.ResponseWriter, request *http.Request) {
 		id,err := strconv.Atoi( mux.Vars(request)["id"])
 		if err != nil {
-			wrapBadRequestResponse(writer, err)
+			WrapBadRequestResponse(writer, err)
 			return
 		}
 
@@ -72,12 +72,12 @@ func EditProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 
 		err = validateRequiredFields(req)
 		if err != nil {
-			wrapBadRequestResponse(writer, err)
+			WrapBadRequestResponse(writer, err)
 			return
 		}
 		account, err :=service.getProfileInfo(int64(id))
 		if err != nil {
-			wrapBadRequestResponse(writer, err)
+			WrapBadRequestResponse(writer, err)
 			return
 		}
 		data, httpStatus := builtResponse(account, http.StatusOK)

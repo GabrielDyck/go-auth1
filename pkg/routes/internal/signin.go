@@ -67,7 +67,7 @@ func SignIn(router *mux.Router, db mysql.SignIn, expirationDateInMin int) {
 			_, err = service.signIn(req)
 
 			if err != nil {
-				wrapBadRequestResponse(writer, err)
+				WrapBadRequestResponse(writer, err)
 			}
 
 			profileInfo, err := service.getProfileInfo(req)

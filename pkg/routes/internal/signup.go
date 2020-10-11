@@ -44,7 +44,7 @@ func SignUp(router *mux.Router, 	client mysql.SignUp) {
 		err = service.signUp(req)
 
 		if err !=nil{
-			wrapBadRequestResponse(writer,err)
+			WrapBadRequestResponse(writer,err)
 		}
 
 	}).Methods("POST")
