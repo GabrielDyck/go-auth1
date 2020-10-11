@@ -24,7 +24,7 @@ type ErrorMSG struct {
 	Reason string `json:"reason"`
 }
 
-func writeResponse(response interface{}, statusCode int)([]byte ,int) {
+func builtResponse(response interface{}, statusCode int)([]byte ,int) {
 
 	data , err :=json.Marshal(response)
 
@@ -63,10 +63,9 @@ func parseRequest(writer http.ResponseWriter, request *http.Request, bodyStruct 
 	return err
 }
 
-func wrapResponse(writer http.ResponseWriter, err error, statusCode int) {
-	data, httpStatus := writeResponse(builtErrorBodyMsg(err), statusCode)
+func wrapResponse(writer http.ResponseWriter,data []byte, httpStatus int) {
 	writer.WriteHeader(httpStatus)
-	_,err = writer.Write(data)
+	_,err := writer.Write(data)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -75,6 +74,8 @@ func wrapResponse(writer http.ResponseWriter, err error, statusCode int) {
 
 
 func wrapBadRequestResponse(writer http.ResponseWriter, err error) {
-	wrapResponse(writer,err,http.StatusBadRequest)
+	data, httpStatus := builtResponse(builtErrorBodyMsg(err), http.StatusBadRequest)
+	wrapResponse(writer,data,httpStatus)
+
 }
 

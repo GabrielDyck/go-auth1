@@ -11,28 +11,20 @@ const (
 	signUpPath = "/signup"
 )
 
-type Service interface {
-	SignUp(req UserSignReq) bool
-}
 
 
-type Response struct {
-	Email  string          `json:"email"`
-	Result OperationResult `json:"result"`
-}
-
-type service struct {
+type signupService struct {
 	db mysql.SignUp
 }
 
 
-func NewSignUpService(db mysql.SignUp) service {
-	return service{
+func NewSignUpService(db mysql.SignUp) signupService {
+	return signupService{
 		db:db,
 	}
 }
 
-func (s *service) signUp(req UserSignReq) error {
+func (s *signupService) signUp(req UserSignReq) error {
 	return s.db.SignUpAccount(req.Email,req.Password,req.AccountType)
 }
 
