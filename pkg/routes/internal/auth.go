@@ -1,4 +1,4 @@
-package routes
+package internal
 
 import "auth1/pkg/mysql"
 
@@ -10,7 +10,7 @@ type authService struct {
 	db mysql.Auth
 }
 
-func NewAuthService(db mysql.Auth) AuthService{
+func NewAuthService(db mysql.Auth) AuthService {
 	return &authService{db: db}
 }
 

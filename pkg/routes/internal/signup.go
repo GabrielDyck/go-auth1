@@ -1,4 +1,4 @@
-package routes
+package internal
 
 import (
 	"auth1/pkg/mysql"
@@ -30,7 +30,7 @@ func (s *signupService) signUp(req UserSignReq) error {
 }
 
 
-func signUp(router *mux.Router, 	client mysql.SignUp) {
+func SignUp(router *mux.Router, 	client mysql.SignUp) {
 
 	service:= NewSignUpService(client)
 	router.HandleFunc(signUpPath, func(writer http.ResponseWriter, request *http.Request) {

@@ -1,4 +1,4 @@
-package routes
+package internal
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ const (
 	healthCheckPath = "/health-check"
 )
 
-func healthCheck(router *mux.Router) {
+func HealthCheck(router *mux.Router) {
 	router.HandleFunc(healthCheckPath, func(writer http.ResponseWriter, request *http.Request) {
 		writer.WriteHeader(http.StatusOK)
 		_,err:= writer.Write([]byte("OK"))

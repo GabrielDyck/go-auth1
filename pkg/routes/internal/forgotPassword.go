@@ -1,4 +1,4 @@
-package routes
+package internal
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ type ForgotPasswordReq struct {
 	Email string `json:"email"`
 }
 
-func forgotPassword(router *mux.Router) {
+func ForgotPassword(router *mux.Router) {
 	router.HandleFunc(forgotPasswordPath, func(writer http.ResponseWriter, request *http.Request) {
 
 		var req ForgotPasswordReq

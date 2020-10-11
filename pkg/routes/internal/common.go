@@ -1,4 +1,4 @@
-package routes
+package internal
 
 import (
 	"crypto/sha256"
@@ -13,7 +13,7 @@ import (
 type OperationResult string
 
 const(
-	Error OperationResult = "ERROR"
+	Error   OperationResult = "ERROR"
 	Success OperationResult = "SUCCESS"
 )
 type UserSignReq struct {
@@ -43,7 +43,7 @@ func builtResponse(response interface{}, statusCode int)([]byte ,int) {
 }
 
 
-func builtErrorBodyMsg(err error) ErrorMSG{
+func builtErrorBodyMsg(err error) ErrorMSG {
 	return ErrorMSG{Reason: err.Error()}
 }
 
@@ -53,14 +53,14 @@ func parseRequest(writer http.ResponseWriter, request *http.Request, bodyStruct 
 	body, err := ioutil.ReadAll(request.Body)
 
 	if err != nil {
-		wrapBadRequestResponse(writer, err)
+		WrapBadRequestResponse(writer, err)
 		return err
 	}
 
 	err = json.Unmarshal(body, bodyStruct)
 
 	if err != nil {
-		wrapBadRequestResponse(writer, err)
+		WrapBadRequestResponse(writer, err)
 	}
 	return err
 }
@@ -74,13 +74,13 @@ func wrapResponse(writer http.ResponseWriter,data []byte, httpStatus int) {
 }
 
 
-func wrapInternalErrorResponse(writer http.ResponseWriter, err error) {
+func WrapInternalErrorResponse(writer http.ResponseWriter, err error) {
 	data, httpStatus := builtResponse(builtErrorBodyMsg(err), http.StatusInternalServerError)
 	wrapResponse(writer,data,httpStatus)
 
 }
 
-func wrapBadRequestResponse(writer http.ResponseWriter, err error) {
+func WrapBadRequestResponse(writer http.ResponseWriter, err error) {
 	data, httpStatus := builtResponse(builtErrorBodyMsg(err), http.StatusBadRequest)
 	wrapResponse(writer,data,httpStatus)
 

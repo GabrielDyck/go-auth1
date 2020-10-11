@@ -1,4 +1,4 @@
-package routes
+package internal
 
 import (
 	"auth1/pkg/mysql"
@@ -28,14 +28,24 @@ type profileInfoService struct {
 func NewProfileInfoService(db mysql.ProfileInfo) profileInfoService {
 	return profileInfoService{db: db}
 }
-func getProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
+func GetProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 
-	_ = NewProfileInfoService(db)
+	service := NewProfileInfoService(db)
 	router.HandleFunc(profile, func(writer http.ResponseWriter, request *http.Request) {
-		id := mux.Vars(request)["id"]
-
+		id,err  := strconv.Atoi(mux.Vars(request)["id"])
+		if err != nil {
+			wrapBadRequestResponse(writer, err)
+			return
+		}
 		fmt.Println(id)
 
+		account, err := service.getProfileInfo(int64(id))
+		if err != nil {
+			wrapBadRequestResponse(writer, err)
+			return
+		}
+		data, httpStatus := builtResponse(account, http.StatusOK)
+		wrapResponse(writer,data,httpStatus)
 	}).Methods("GET")
 
 
@@ -43,7 +53,7 @@ func getProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 
 
 
-func editProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
+func EditProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 	service := NewProfileInfoService(db)
 	router.HandleFunc(profile, func(writer http.ResponseWriter, request *http.Request) {
 		id,err := strconv.Atoi( mux.Vars(request)["id"])
@@ -70,7 +80,7 @@ func editProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 			wrapBadRequestResponse(writer, err)
 			return
 		}
-		data, httpStatus :=builtResponse(account, http.StatusOK)
+		data, httpStatus := builtResponse(account, http.StatusOK)
 		wrapResponse(writer,data,httpStatus)
 
 	}).Methods("POST")

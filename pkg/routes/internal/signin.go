@@ -1,4 +1,4 @@
-package routes
+package internal
 
 import (
 	"auth1/pkg/mysql"
@@ -52,7 +52,7 @@ func (s *signInService) generateSessionToken(id int64, expirationDateInMin int) 
 
 }
 
-func signIn(router *mux.Router, db mysql.SignIn, expirationDateInMin int) {
+func SignIn(router *mux.Router, db mysql.SignIn, expirationDateInMin int) {
 
 	service := NewSignInService(db, expirationDateInMin)
 	router.HandleFunc(signInPath,

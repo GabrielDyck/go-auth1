@@ -3,6 +3,7 @@ package routes
 import (
 	"auth1/pkg/config"
 	"auth1/pkg/mysql"
+	"auth1/pkg/routes/internal"
 	"errors"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -22,20 +23,20 @@ func NewCustomRouter(client mysql.Client, configuration config.Configuration) Cu
 
 func (c *CustomRouter) AddRoutes(router *mux.Router) {
 	router.Use(c.commonMiddleware)
-	healthCheck(router)
-	signIn(router, c.client, c.configuration.ExpirationDateInMin)
-	signUp(router, c.client)
-	getProfileInfo(router, c.client)
-	logout(router)
-	forgotPassword(router)
-	resetPassword(router)
+	internal.HealthCheck(router)
+	internal.SignIn(router, c.client, c.configuration.ExpirationDateInMin)
+	internal.SignUp(router, c.client)
+	internal.GetProfileInfo(router, c.client)
+	internal.Logout(router)
+	internal.ForgotPassword(router)
+	internal.ResetPassword(router)
 	http.Handle("/",router)
 }
 func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {
 	router.Use(c.commonMiddleware)
 	router.Use(c.secureMiddleware)
-	editProfileInfo(router, c.client)
-	logout(router)
+	internal.EditProfileInfo(router, c.client)
+	internal.Logout(router)
 
 
 	http.Handle("/auth/",router)
@@ -55,12 +56,12 @@ func (c *CustomRouter) secureMiddleware(next http.Handler) http.Handler {
 		authenticated, err := c.client.IsAuthenticated(token)
 
 		if err !=nil{
-			wrapInternalErrorResponse(w,err)
+			internal.WrapInternalErrorResponse(w,err)
 			return
 		}
 
 		if !authenticated{
-			wrapBadRequestResponse(w,errors.New("not Authenticated"))
+			internal.WrapBadRequestResponse(w,errors.New("not Authenticated"))
 			return
 		}
 

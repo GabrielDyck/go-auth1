@@ -1,4 +1,4 @@
-package routes
+package internal
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ type ResetPasswordReq struct {
 	Password string `json:"password"`
 }
 
-func resetPassword(router *mux.Router) {
+func ResetPassword(router *mux.Router) {
 	router.HandleFunc(resetPasswordPath, func(writer http.ResponseWriter, request *http.Request) {
 
 		token :=request.Header.Get("FORGOT_TOKEN")

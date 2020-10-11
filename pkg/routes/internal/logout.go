@@ -1,4 +1,4 @@
-package routes
+package internal
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ const (
 	logoutPath = "/logout"
 )
 
-func logout(router *mux.Router) {
+func Logout(router *mux.Router) {
 	router.HandleFunc(logoutPath, func(writer http.ResponseWriter, request *http.Request) {
 
 		user := request.Header.Get("User")
