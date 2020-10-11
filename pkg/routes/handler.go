@@ -22,14 +22,14 @@ func NewCustomRouter(client mysql.Client, configuration config.Configuration) Cu
 	}
 }
 
-func (c *CustomRouter) AddRoutes(router *mux.Router, emailSender mail.Sender) {
+func (c *CustomRouter) AddRoutes(router *mux.Router, expirationDateInMin int, emailSender mail.Sender) {
 	router.Use(c.commonMiddleware)
 	internal.HealthCheck(router)
-	internal.SignIn(router, c.client, c.configuration.ExpirationDateInMin)
+	internal.SignIn(router, c.client)
 	internal.SignUp(router, c.client)
 	internal.GetProfileInfo(router, c.client)
 	internal.Logout(router)
-	internal.ForgotPassword(router,c.client, emailSender)
+	internal.ForgotPassword(router,c.client,expirationDateInMin, emailSender)
 	internal.ResetPassword(router)
 	http.Handle("/",router)
 }

@@ -8,7 +8,7 @@ import (
 type SignIn interface {
 	IsLoginGranted(email, password string) (bool, error)
 	GetProfileInfoByEmailAndAccountType(email string, accountType model.AccountType) (*model.Account, error)
-	CreateAuthorizationToken(id int64, token string, expirationMinutes int) error
+	CreateAuthorizationToken(id int64, token string) error
 }
 
 
@@ -34,7 +34,7 @@ func (c *client) IsLoginGranted(email, password string) (bool, error) {
 }
 
 
-func (c *client) CreateAuthorizationToken(id int64, token string, expirationMinutes int) error {
+func (c *client) CreateAuthorizationToken(id int64, token string) error {
 
 	stmt, err := c.db.Prepare(
 		"INSERT INTO SESSION_TOKENS(TOKEN,ACCOUNT_ID,EXPIRATION_DATE)" +

@@ -15,13 +15,11 @@ const (
 
 type signInService struct {
 	db                  mysql.SignIn
-	expirationDateInMin int
 }
 
-func NewSignInService(db mysql.SignIn, expirationDateInMin int) signInService {
+func NewSignInService(db mysql.SignIn) signInService {
 	return signInService{
 		db:                  db,
-		expirationDateInMin: expirationDateInMin,
 	}
 }
 
@@ -35,14 +33,14 @@ func (s *signInService) getProfileInfo(req UserSignReq) (*model.Account, error) 
 	return s.db.GetProfileInfoByEmailAndAccountType(req.Email, req.AccountType)
 }
 
-func (s *signInService) generateSessionToken(id int64, expirationDateInMin int) (string, error) {
+func (s *signInService) generateSessionToken(id int64) (string, error) {
 	token := make([]byte, 16)
 	_, err := rand.Read(token)
 	if err != nil {
 		return "", err
 	}
 	tokenString := string(token)
-	err = s.db.CreateAuthorizationToken(id, tokenString, expirationDateInMin)
+	err = s.db.CreateAuthorizationToken(id, tokenString)
 
 	if err != nil {
 		return "", err
@@ -52,9 +50,9 @@ func (s *signInService) generateSessionToken(id int64, expirationDateInMin int) 
 
 }
 
-func SignIn(router *mux.Router, db mysql.SignIn, expirationDateInMin int) {
+func SignIn(router *mux.Router, db mysql.SignIn) {
 
-	service := NewSignInService(db, expirationDateInMin)
+	service := NewSignInService(db)
 	router.HandleFunc(signInPath,
 		func(writer http.ResponseWriter, request *http.Request) {
 
@@ -76,7 +74,7 @@ func SignIn(router *mux.Router, db mysql.SignIn, expirationDateInMin int) {
 				return
 			}
 
-			token, err :=service.generateSessionToken(profileInfo.ID,service.expirationDateInMin)
+			token, err :=service.generateSessionToken(profileInfo.ID)
 
 			writer.Header().Set("AUTHORIZATION",token)
 			data, httpStatus := builtResponse(profileInfo, http.StatusOK)

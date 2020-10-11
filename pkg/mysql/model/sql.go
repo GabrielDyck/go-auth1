@@ -1,5 +1,6 @@
 package model
 
+import "time"
 
 type AccountType string
 
@@ -20,5 +21,5 @@ type Account struct {
 type ForgotPasswordToken struct {
 	AccountID int64
 	Token string
-	ExpirationDate string
+	ExpirationDate time.Time
 }

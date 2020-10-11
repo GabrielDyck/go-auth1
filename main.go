@@ -19,7 +19,7 @@ func main() {
 	var router = mux.NewRouter()
 	var authRouter = mux.NewRouter().PathPrefix("/auth").Subrouter()
 	customRouter := routes.NewCustomRouter(application.Client,configuration)
-	customRouter.AddRoutes(router,emailSender)
+	customRouter.AddRoutes(router,configuration.ExpirationDateInMin,emailSender)
 	customRouter.AddAuthRoutes(authRouter)
 
 
