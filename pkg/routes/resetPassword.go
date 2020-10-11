@@ -7,15 +7,15 @@ import (
 )
 
 const (
-	resetPassword = "/resetPassword"
+	resetPasswordPath = "/resetPassword"
 )
 
 type ResetPasswordReq struct {
 	Password string `json:"password"`
 }
 
-func addResetPassword(router *mux.Router) {
-	router.HandleFunc(resetPassword, func(writer http.ResponseWriter, request *http.Request) {
+func resetPassword(router *mux.Router) {
+	router.HandleFunc(resetPasswordPath, func(writer http.ResponseWriter, request *http.Request) {
 
 		token :=request.Header.Get("FORGOT_TOKEN")
 

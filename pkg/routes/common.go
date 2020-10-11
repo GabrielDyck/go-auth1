@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -78,4 +80,12 @@ func wrapBadRequestResponse(writer http.ResponseWriter, err error) {
 	wrapResponse(writer,data,httpStatus)
 
 }
+
+func hashPassword(pass string) string {
+	hasher := sha256.New()
+	hasher.Write([]byte(pass))
+	encrypterPassword := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	return encrypterPassword
+}
+
 

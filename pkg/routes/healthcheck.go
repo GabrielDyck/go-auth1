@@ -7,11 +7,11 @@ import (
 )
 
 const (
-	healthCheck = "/health-check"
+	healthCheckPath = "/health-check"
 )
 
-func addHealthCheck(router *mux.Router) {
-	router.HandleFunc(healthCheck, func(writer http.ResponseWriter, request *http.Request) {
+func healthCheck(router *mux.Router) {
+	router.HandleFunc(healthCheckPath, func(writer http.ResponseWriter, request *http.Request) {
 		writer.WriteHeader(http.StatusOK)
 		_,err:= writer.Write([]byte("OK"))
 		if err != nil {

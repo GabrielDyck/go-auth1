@@ -14,6 +14,7 @@ type mysql struct {
 
 type Configuration struct {
 	Port  string `json:"port"`
+	ExpirationDateInMin int `json:"expiration_date_in_min"`
 	Mysql mysql  `json:"mysql"`
 }
 

@@ -15,7 +15,7 @@ func main() {
 	application := app.SetUpApplication(configuration)
 	application.Client.Connect()
 	var router = mux.NewRouter()
-	routes.AddRoutes(router,application.Client)
+	routes.AddRoutes(router,application.Client,configuration)
 
 
 	err := http.ListenAndServe(configuration.Port, router)

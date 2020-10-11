@@ -3,6 +3,7 @@ package routes
 import (
 	"auth1/pkg/mysql"
 	"auth1/pkg/mysql/model"
+	"crypto/rand"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -13,27 +14,47 @@ const (
 )
 
 type signInService struct {
-	db mysql.SignIn
+	db                  mysql.SignIn
+	expirationDateInMin int
 }
 
-func NewSignInService(db mysql.SignIn) signInService {
+func NewSignInService(db mysql.SignIn, expirationDateInMin int) signInService {
 	return signInService{
-		db: db,
+		db:                  db,
+		expirationDateInMin: expirationDateInMin,
 	}
 }
 
 func (s *signInService) signIn(req UserSignReq) (bool, error) {
-	return s.db.IsLoginGranted(req.Email, req.Password)
+	encrypterPassword := hashPassword(req.Password)
+
+	return s.db.IsLoginGranted(req.Email, encrypterPassword)
 }
 
 func (s *signInService) getProfileInfo(req UserSignReq) (*model.Account, error) {
-	return s.db.GetProfileInfoByEmailAndAccountType(req.Email,req.AccountType)
+	return s.db.GetProfileInfoByEmailAndAccountType(req.Email, req.AccountType)
 }
 
+func (s *signInService) generateSessionToken(id int64, expirationDateInMin int) (string, error) {
+	token := make([]byte, 16)
+	_, err := rand.Read(token)
+	if err != nil {
+		return "", err
+	}
+	tokenString := string(token)
+	err = s.db.CreateAuthorizationToken(id, tokenString, expirationDateInMin)
 
-func SignIn(router *mux.Router, db mysql.SignIn) {
+	if err != nil {
+		return "", err
+	}
 
-	service := NewSignInService(db)
+	return tokenString, nil
+
+}
+
+func signIn(router *mux.Router, db mysql.SignIn, expirationDateInMin int) {
+
+	service := NewSignInService(db, expirationDateInMin)
 	router.HandleFunc(signInPath,
 		func(writer http.ResponseWriter, request *http.Request) {
 
@@ -49,12 +70,17 @@ func SignIn(router *mux.Router, db mysql.SignIn) {
 				wrapBadRequestResponse(writer, err)
 			}
 
-			profileInfo,err := service.getProfileInfo(req)
+			profileInfo, err := service.getProfileInfo(req)
 			if err != nil {
 				builtResponse(writer, http.StatusInternalServerError)
+				return
 			}
 
-			data, httpStatus :=builtResponse(profileInfo, http.StatusOK)
-			wrapResponse(writer,data,httpStatus)
+			token, err :=service.generateSessionToken(profileInfo.ID,service.expirationDateInMin)
+
+			writer.Header().Set("AUTHORIZATION",token)
+			data, httpStatus := builtResponse(profileInfo, http.StatusOK)
+			wrapResponse(writer, data, httpStatus)
+
 		}).Methods("POST")
 }

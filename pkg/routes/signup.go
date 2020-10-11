@@ -25,11 +25,12 @@ func NewSignUpService(db mysql.SignUp) signupService {
 }
 
 func (s *signupService) signUp(req UserSignReq) error {
-	return s.db.SignUpAccount(req.Email,req.Password,req.AccountType)
+    hashedPassword := hashPassword(req.Password)
+	return s.db.SignUpAccount(req.Email,hashedPassword,req.AccountType)
 }
 
 
-func addSignUp(router *mux.Router, 	client mysql.SignUp) {
+func signUp(router *mux.Router, 	client mysql.SignUp) {
 
 	service:= NewSignUpService(client)
 	router.HandleFunc(signUpPath, func(writer http.ResponseWriter, request *http.Request) {

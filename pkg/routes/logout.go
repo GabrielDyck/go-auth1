@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	logout = "/logout"
+	logoutPath = "/logout"
 )
 
-func addLogout(router *mux.Router) {
-	router.HandleFunc(logout, func(writer http.ResponseWriter, request *http.Request) {
+func logout(router *mux.Router) {
+	router.HandleFunc(logoutPath, func(writer http.ResponseWriter, request *http.Request) {
 
 		user := request.Header.Get("User")
 		token := request.Header.Get("Authorization")

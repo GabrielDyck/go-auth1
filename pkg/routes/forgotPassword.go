@@ -7,15 +7,15 @@ import (
 )
 
 const (
-	forgotPassword = "/forgotPassword"
+	forgotPasswordPath = "/forgotPassword"
 )
 
 type ForgotPasswordReq struct {
 	Email string `json:"email"`
 }
 
-func addForgotPassword(router *mux.Router) {
-	router.HandleFunc(forgotPassword, func(writer http.ResponseWriter, request *http.Request) {
+func forgotPassword(router *mux.Router) {
+	router.HandleFunc(forgotPasswordPath, func(writer http.ResponseWriter, request *http.Request) {
 
 		var req ForgotPasswordReq
 		err := parseRequest(writer, request,&req)

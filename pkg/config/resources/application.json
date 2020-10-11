@@ -1,5 +1,6 @@
 {
 "port":":9290",
+  "expiration_date_in_min": 15,
   "mysql": {
     "address": "127.0.0.1:3306",
     "schema": "auth",
