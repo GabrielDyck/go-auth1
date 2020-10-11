@@ -15,10 +15,13 @@ func main() {
 	application := app.SetUpApplication(configuration)
 	application.Client.Connect()
 	var router = mux.NewRouter()
-	routes.AddRoutes(router,application.Client,configuration)
+	var authRouter = mux.NewRouter().PathPrefix("/auth").Subrouter()
+	customRouter := routes.NewCustomRouter(application.Client,configuration)
+	customRouter.AddRoutes(router)
+	customRouter.AddAuthRoutes(authRouter)
 
 
-	err := http.ListenAndServe(configuration.Port, router)
+	err := http.ListenAndServe(configuration.Port, nil)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -6,13 +6,22 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"os"
+	"sync"
 )
 
 type Client interface {
 	SignUp
 	SignIn
 	ProfileInfo
+	Auth
 	Connect()
+}
+
+var once sync.Once
+var instance Client
+
+type Auth interface {
+	IsAuthenticated(token string) (bool, error)
 }
 
 type SignUp interface {
@@ -22,7 +31,8 @@ type SignUp interface {
 type SignIn interface {
 	IsLoginGranted(email, password string) (bool, error)
 	GetProfileInfoByEmailAndAccountType(email, accountType string) (*model.Account, error)
-	CreateAuthorizationToken(id int64, token string, expirationMinutes int) error}
+	CreateAuthorizationToken(id int64, token string, expirationMinutes int) error
+}
 
 type ProfileInfo interface {
 	GetProfileInfoById(id int64) (*model.Account, error)
@@ -37,11 +47,16 @@ type client struct {
 }
 
 func NewClient(address, schema, username string) Client {
-	return &client{
-		address:  address,
-		schema:   schema,
-		username: username,
-	}
+	once.Do(func() {
+		instance = &client{
+			address:  address,
+			schema:   schema,
+			username: username,
+		}
+	})
+
+	return instance
+
 }
 
 func (c *client) Connect() {
@@ -60,6 +75,9 @@ func (c *client) IsLoginGranted(email, password string) (bool, error) {
 		return false, err
 	}
 	var count int
+	if !row.Next() {
+		return false, nil
+	}
 	err = row.Scan(&count)
 
 	if err != nil {
@@ -70,6 +88,25 @@ func (c *client) IsLoginGranted(email, password string) (bool, error) {
 
 }
 
+func (c *client) IsAuthenticated(token string) (bool, error) {
+	row, err := c.db.Query("SELECT COUNT(1) FROM SESSION_TOKENS WHERE TOKEN = ? AND NOW() < EXPIRATION_DATE;", token)
+
+	if err != nil {
+		return false, err
+	}
+	var count int
+	if !row.Next() {
+		return false, nil
+	}
+	err = row.Scan(&count)
+
+	if err != nil {
+		return false, err
+	}
+
+	return count == 1, nil
+}
+
 func (c *client) GetProfileInfoByEmailAndAccountType(email, accountType string) (*model.Account, error) {
 	row, err := c.db.Query("SELECT ID, EMAIL, FULLNAME, ADDRESS, PHONE FROM ACCOUNTS WHERE EMAIL = ?  AND ACCOUNT_TYPE !=?;", email, accountType)
 
@@ -77,6 +114,9 @@ func (c *client) GetProfileInfoByEmailAndAccountType(email, accountType string) 
 		return nil, err
 	}
 	var account model.Account
+	if !row.Next() {
+		return nil, nil
+	}
 	err = row.Scan(&account.ID, &account.Email, &account.Fullname, &account.Address, &account.Phone)
 
 	if err != nil {
@@ -93,6 +133,9 @@ func (c *client) GetProfileInfoById(id int64) (*model.Account, error) {
 		return nil, err
 	}
 	var account model.Account
+	if !row.Next() {
+		return nil, nil
+	}
 	err = row.Scan(&account.ID, &account.Email, &account.Fullname, &account.Address, &account.Phone)
 
 	if err != nil {

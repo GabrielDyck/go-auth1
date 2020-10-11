@@ -30,7 +30,7 @@ func NewProfileInfoService(db mysql.ProfileInfo) profileInfoService {
 }
 func getProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 
-	service := NewProfileInfoService(db)
+	_ = NewProfileInfoService(db)
 	router.HandleFunc(profile, func(writer http.ResponseWriter, request *http.Request) {
 		id := mux.Vars(request)["id"]
 
@@ -38,6 +38,13 @@ func getProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 
 	}).Methods("GET")
 
+
+}
+
+
+
+func editProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
+	service := NewProfileInfoService(db)
 	router.HandleFunc(profile, func(writer http.ResponseWriter, request *http.Request) {
 		id,err := strconv.Atoi( mux.Vars(request)["id"])
 		if err != nil {

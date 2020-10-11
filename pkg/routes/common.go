@@ -74,6 +74,11 @@ func wrapResponse(writer http.ResponseWriter,data []byte, httpStatus int) {
 }
 
 
+func wrapInternalErrorResponse(writer http.ResponseWriter, err error) {
+	data, httpStatus := builtResponse(builtErrorBodyMsg(err), http.StatusInternalServerError)
+	wrapResponse(writer,data,httpStatus)
+
+}
 
 func wrapBadRequestResponse(writer http.ResponseWriter, err error) {
 	data, httpStatus := builtResponse(builtErrorBodyMsg(err), http.StatusBadRequest)
