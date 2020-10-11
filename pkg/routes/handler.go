@@ -10,9 +10,9 @@ import (
 func AddRoutes(router *mux.Router,client mysql.Client){
 	router.Use(commonMiddleware)
 	addHealthCheck(router)
-	SignIn(router)
+	SignIn(router,client)
 	addSignUp(router, client)
-	addProfileRoutes(router)
+	getProfileInfo(router)
 	addLogout(router)
 	addForgotPassword(router)
 	addResetPassword(router)

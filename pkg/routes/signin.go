@@ -27,7 +27,7 @@ func (s *signInService) signIn(req UserSignReq) (bool, error) {
 }
 
 func (s *signInService) getProfileInfo(req UserSignReq) (*model.Account, error) {
-	return s.db.GetProfileInfo(req.Email,req.AccountType)
+	return s.db.GetProfileInfoByEmailAndAccountType(req.Email,req.AccountType)
 }
 
 

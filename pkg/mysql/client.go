@@ -10,6 +10,8 @@ import (
 
 type Client interface {
 	SignUp
+	SignIn
+	ProfileInfo
 	Connect()
 }
 
@@ -19,9 +21,13 @@ type SignUp interface {
 
 type SignIn interface {
 	IsLoginGranted(email, password string) (bool,error)
-    GetProfileInfo(email, accountType string) (*model.Account,error)
-
+	GetProfileInfoByEmailAndAccountType(email, accountType string) (*model.Account,error)
 }
+
+type ProfileInfo interface {
+	GetProfileInfoById(id int64) (*model.Account,error)
+}
+
 
 type client struct {
 	address  string
@@ -66,7 +72,7 @@ func (c * client) IsLoginGranted(email, password string) (bool,error){
 }
 
 
-func (c * client) GetProfileInfo(email, accountType string) (*model.Account,error){
+func (c * client) GetProfileInfoByEmailAndAccountType(email, accountType string) (*model.Account,error){
 	row,err := c.db.Query("SELECT ID, EMAIL, FULLNAME, ADDRESS, PHONE FROM ACCOUNTS WHERE EMAIL = ?  AND ACCOUNT_TYPE !=?;",email,accountType)
 
 	if err != nil {
@@ -81,6 +87,23 @@ func (c * client) GetProfileInfo(email, accountType string) (*model.Account,erro
 
 	return &account,nil
 }
+
+func (c * client) GetProfileInfoById(id int64) (*model.Account,error){
+	row,err := c.db.Query("SELECT ID, EMAIL, FULLNAME, ADDRESS, PHONE FROM ACCOUNTS WHERE ID = ?;",id)
+
+	if err != nil {
+		return nil,err
+	}
+	var account model.Account
+	err= row.Scan(&account.ID, &account.Email, &account.Fullname, &account.Address, &account.Phone)
+
+	if err != nil {
+		return nil,err
+	}
+
+	return &account,nil
+}
+
 
 func (c *client) SignUpAccount(email , password, accountType string) error{
 
