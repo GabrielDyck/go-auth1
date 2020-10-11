@@ -10,12 +10,14 @@ import (
 )
 
 type Client interface {
+	Auth
 	SignUp
 	SignIn
-	ProfileInfo
-	Auth
+	Account
+	ResetPassword
 	ForgotPassword
 	Connect()
+	//TODO Shutdown()
 }
 
 var once sync.Once
@@ -75,6 +77,8 @@ func (c *client) Connect() {
 	}
 	c.db = db
 }
+
+
 
 
 

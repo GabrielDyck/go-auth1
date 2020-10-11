@@ -20,6 +20,7 @@ func Logout(router *mux.Router) {
 
 		if err != nil {
 			WrapBadRequestResponse(writer, err)
+			return
 		}
 
 	}).Methods("POST")

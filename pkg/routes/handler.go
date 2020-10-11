@@ -30,7 +30,7 @@ func (c *CustomRouter) AddRoutes(router *mux.Router, expirationDateInMin int, em
 	internal.GetProfileInfo(router, c.client)
 	internal.Logout(router)
 	internal.ForgotPassword(router,c.client,expirationDateInMin, emailSender)
-	internal.ResetPassword(router)
+	internal.ResetPassword(router,c.client)
 	http.Handle("/",router)
 }
 func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {

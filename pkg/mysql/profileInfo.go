@@ -2,12 +2,12 @@ package mysql
 
 import "auth1/pkg/mysql/model"
 
-type ProfileInfo interface {
-	GetProfileInfoById(id int64) (*model.Account, error)
+type Account interface {
+	GetAccountById(id int64) (*model.Account, error)
 }
 
 
-func (c *client) GetProfileInfoById(id int64) (*model.Account, error) {
+func (c *client) GetAccountById(id int64) (*model.Account, error) {
 	row, err := c.db.Query("SELECT ID, EMAIL, FULLNAME, ADDRESS, PHONE FROM ACCOUNTS WHERE ID = ?;", id)
 
 	if err != nil {

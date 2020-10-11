@@ -4,6 +4,7 @@ import (
 	"auth1/pkg/mail"
 	"auth1/pkg/mysql"
 	"auth1/pkg/mysql/model"
+	"crypto/rand"
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -42,21 +43,31 @@ func ForgotPassword(router *mux.Router, db mysql.ForgotPassword, expirationDateI
 		account, err :=service.db.GetProfileInfoByEmailAndAccountType(req.Email,model.Basic)
 		if err != nil {
 			WrapBadRequestResponse(writer, err)
+			return
 		}
 
 		if account== nil{
 			WrapBadRequestResponse(writer, errors.New("email doesn't exist in our database"))
+			return
 		}
 
-		err =service.db.CreateForgotPasswordToken(account.ID,expirationDateInMin)
+		token := service.tokenGenerator()
+		err =service.db.CreateForgotPasswordToken(account.ID,expirationDateInMin,token)
 
 		if err != nil {
 			WrapInternalErrorResponse(writer, err)
+			return
 		}
 
-		emailSender.SendEmail(req.Email)
+		emailSender.SendEmail(req.Email,token)
 
 		writer.WriteHeader(http.StatusOK)
 
 	}).Methods("POST")
+}
+
+func (f * forgotPasswordService) tokenGenerator() string {
+	b := make([]byte, 32)
+	_,_=rand.Read(b)
+	return fmt.Sprintf("%x", b)
 }

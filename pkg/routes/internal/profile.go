@@ -22,13 +22,13 @@ type ProfileWriteReq struct {
 }
 
 type profileInfoService struct {
-	db mysql.ProfileInfo
+	db mysql.Account
 }
 
-func NewProfileInfoService(db mysql.ProfileInfo) profileInfoService {
+func NewProfileInfoService(db mysql.Account) profileInfoService {
 	return profileInfoService{db: db}
 }
-func GetProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
+func GetProfileInfo(router *mux.Router, db mysql.Account) {
 
 	service := NewProfileInfoService(db)
 	router.HandleFunc(profile, func(writer http.ResponseWriter, request *http.Request) {
@@ -53,7 +53,7 @@ func GetProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 
 
 
-func EditProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
+func EditProfileInfo(router *mux.Router, db mysql.Account) {
 	service := NewProfileInfoService(db)
 	router.HandleFunc(profile, func(writer http.ResponseWriter, request *http.Request) {
 		id,err := strconv.Atoi( mux.Vars(request)["id"])
@@ -89,7 +89,7 @@ func EditProfileInfo(router *mux.Router, db mysql.ProfileInfo) {
 
 
 func (s *profileInfoService) getProfileInfo(id int64) (*model.Account,error) {
-	return s.db.GetProfileInfoById(id)
+	return s.db.GetAccountById(id)
 }
 
 
