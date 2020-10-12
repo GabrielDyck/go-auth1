@@ -23,7 +23,7 @@ func (c *client) DeleteForgotPasswordToken(token string) error {
 }
 
 func (c *client) GetForgotPasswordTokenByToken(token string) (*model.ForgotPasswordToken, error) {
-	row, err := c.db.Query("SELECT TOKEN, ACCOUNT_ID, EXPIRATION_DATE FROM ACCOUNTS WHERE TOKEN = ?;", token)
+	row, err := c.db.Query("SELECT TOKEN, ACCOUNT_ID, EXPIRATION_DATE FROM FORGOT_PASSWORD_TOKENS WHERE TOKEN = ?;", token)
 
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (c *client) GetForgotPasswordTokenByToken(token string) (*model.ForgotPassw
 
 
 func (c *client) ChangePassword(accountId int64,newPassword string)error {
-	_, err := c.db.Exec("UPDATE FROM ACCOUNTS SET PASSWORD= ? WHERE ID = ?;",newPassword, accountId)
+	_, err := c.db.Exec("UPDATE ACCOUNTS SET PASSWORD= ? WHERE ID = ?;",newPassword, accountId)
 
 	if err != nil {
 		return err

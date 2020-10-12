@@ -7,11 +7,12 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"strings"
 	"time"
 )
 
 const (
-	resetPasswordPath = "/resetPassword"
+	resetPasswordPath = "/reset-password"
 )
 
 
@@ -31,7 +32,7 @@ func ResetPassword(router *mux.Router, db mysql.ResetPassword) {
 
 	router.HandleFunc(resetPasswordPath, func(writer http.ResponseWriter, request *http.Request) {
 
-		token := request.Header.Get("FORGOT_TOKEN")
+		token := request.Header.Get("Forgot-Token")
 
 		var req api.ResetPasswordReq
 		err := parseRequest(writer, request, &req)
@@ -51,7 +52,10 @@ func ResetPassword(router *mux.Router, db mysql.ResetPassword) {
 			return
 		}
 
-		if forgotPasswordToken.ExpirationDate.Unix() < time.Now().Unix() {
+		//TODO FIX THIS
+		splitedTime:=strings.Split(time.Now().String(),".")
+		now,_:= time.Parse("2006-01-02 15:04:05",splitedTime[0])
+		if forgotPasswordToken.ExpirationDate.Before(now)  {
 			WrapBadRequestResponse(writer, errors.New("token has expired"))
 			return
 		}
@@ -61,7 +65,7 @@ func ResetPassword(router *mux.Router, db mysql.ResetPassword) {
 			return
 		}
 
-		err = resetPasswordService.db.ChangePassword(account.ID, req.Password)
+		err = resetPasswordService.db.ChangePassword(account.ID, hashPassword(req.Password))
 		if err != nil {
 			WrapInternalErrorResponse(writer, err)
 			return
@@ -72,5 +76,6 @@ func ResetPassword(router *mux.Router, db mysql.ResetPassword) {
 			return
 		}
 
+		WrapOkEmptyResponse(writer)
 	}).Methods("POST")
 }

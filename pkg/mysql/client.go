@@ -38,7 +38,7 @@ func NewClient(address, schema, username string) Client {
 			address:  address,
 			schema:   schema,
 			username: username,
-			datetimeLayout: "2006-01-02 15:04:05.000000",
+			datetimeLayout: "2006-01-02 15:04:05",
 
 		}
 	})
