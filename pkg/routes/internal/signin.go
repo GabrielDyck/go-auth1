@@ -12,6 +12,7 @@ import (
 
 const (
 	signInPath = "/signin"
+
 )
 
 type signInService struct {
@@ -34,6 +35,7 @@ func (s *signInService) getProfileInfo(req api.UserSignReq) (*model.Account, err
 	return s.db.GetProfileInfoByEmailAndAccountType(req.Email, req.AccountType)
 }
 
+
 func (s *signInService) generateSessionToken(id int64) (string, error) {
 	token := make([]byte, 16)
 	_, err := rand.Read(token)
@@ -51,9 +53,8 @@ func (s *signInService) generateSessionToken(id int64) (string, error) {
 
 }
 
-func SignIn(router *mux.Router, db mysql.SignIn) {
+func SignIn(router *mux.Router, service signInService) {
 
-	service := NewSignInService(db)
 	router.HandleFunc(signInPath,
 		func(writer http.ResponseWriter, request *http.Request) {
 
@@ -82,4 +83,9 @@ func SignIn(router *mux.Router, db mysql.SignIn) {
 			wrapResponse(writer, data, httpStatus)
 
 		}).Methods("POST")
+
+
+
+
 }
+

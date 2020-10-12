@@ -25,7 +25,9 @@ func NewCustomRouter(client mysql.Client, configuration config.Configuration) Cu
 func (c *CustomRouter) AddRoutes(router *mux.Router, expirationDateInMin int, emailSender mail.Sender) {
 	router.Use(c.commonMiddleware)
 	internal.HealthCheck(router)
-	internal.SignIn(router, c.client)
+	signInService := internal.NewSignInService(c.client)
+
+	internal.SignIn(router, signInService)
 	internal.SignUp(router, c.client)
 	internal.GetProfileInfo(router, c.client)
 	internal.Logout(router)
@@ -36,7 +38,8 @@ func (c *CustomRouter) AddRoutes(router *mux.Router, expirationDateInMin int, em
 func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {
 	router.Use(c.commonMiddleware)
 	router.Use(c.secureMiddleware)
-	internal.EditProfileInfo(router, c.client)
+	profileService := internal.NewProfileInfoService(c.client)
+	internal.EditProfileInfo(router, profileService )
 	internal.Logout(router)
 
 

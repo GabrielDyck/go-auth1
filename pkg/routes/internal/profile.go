@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	profile = "/profile/{id}"
+	profilePath          = "/profile/{id}"
 )
 
-type ProfileWriteReq struct {
+type ProfileReq struct {
 	Email    string `json:"email"`
 	Fullname string `json:"fullname"`
 	Address  string `json:"address"`
@@ -28,11 +28,12 @@ type profileInfoService struct {
 func NewProfileInfoService(db mysql.Account) profileInfoService {
 	return profileInfoService{db: db}
 }
+
 func GetProfileInfo(router *mux.Router, db mysql.Account) {
 
 	service := NewProfileInfoService(db)
-	router.HandleFunc(profile, func(writer http.ResponseWriter, request *http.Request) {
-		id,err  := strconv.Atoi(mux.Vars(request)["id"])
+	router.HandleFunc(profilePath, func(writer http.ResponseWriter, request *http.Request) {
+		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
 			WrapBadRequestResponse(writer, err)
 			return
@@ -45,24 +46,20 @@ func GetProfileInfo(router *mux.Router, db mysql.Account) {
 			return
 		}
 		data, httpStatus := builtResponse(account, http.StatusOK)
-		wrapResponse(writer,data,httpStatus)
+		wrapResponse(writer, data, httpStatus)
 	}).Methods("GET")
-
 
 }
 
-
-
-func EditProfileInfo(router *mux.Router, db mysql.Account) {
-	service := NewProfileInfoService(db)
-	router.HandleFunc(profile, func(writer http.ResponseWriter, request *http.Request) {
-		id,err := strconv.Atoi( mux.Vars(request)["id"])
+func EditProfileInfo(router *mux.Router, service profileInfoService) {
+	router.HandleFunc(profilePath, func(writer http.ResponseWriter, request *http.Request) {
+		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
 			WrapBadRequestResponse(writer, err)
 			return
 		}
 
-		var req ProfileWriteReq
+		var req ProfileReq
 		err = parseRequest(writer, request, &req)
 		if err != nil {
 			return
@@ -75,25 +72,23 @@ func EditProfileInfo(router *mux.Router, db mysql.Account) {
 			WrapBadRequestResponse(writer, err)
 			return
 		}
-		account, err :=service.getProfileInfo(int64(id))
+		account, err := service.getProfileInfo(int64(id))
 		if err != nil {
 			WrapBadRequestResponse(writer, err)
 			return
 		}
 		data, httpStatus := builtResponse(account, http.StatusOK)
-		wrapResponse(writer,data,httpStatus)
+		wrapResponse(writer, data, httpStatus)
 
 	}).Methods("POST")
 
 }
 
-
-func (s *profileInfoService) getProfileInfo(id int64) (*model.Account,error) {
+func (s *profileInfoService) getProfileInfo(id int64) (*model.Account, error) {
 	return s.db.GetAccountById(id)
 }
 
-
-func validateRequiredFields(req ProfileWriteReq) error {
+func validateRequiredFields(req ProfileReq) error {
 
 	if req.Email == "" {
 		return errors.New("email cannot be empty")

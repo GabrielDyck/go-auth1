@@ -27,3 +27,8 @@ type UserSignReq struct {
 	Password string`json:"password"`
 	AccountType AccountType `json:"account_type"`
 }
+
+type UserSessionTokenResponse struct {
+	SessionToken string `json:"session_token"`
+}
+
