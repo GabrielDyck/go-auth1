@@ -1,9 +1,9 @@
 package internal
 
 import (
+	"auth1/api"
 	"auth1/pkg/mail"
 	"auth1/pkg/mysql"
-	"auth1/pkg/mysql/model"
 	"crypto/rand"
 	"errors"
 	"fmt"
@@ -19,9 +19,7 @@ type forgotPasswordService struct {
 	db mysql.ForgotPassword
 }
 
-type ForgotPasswordReq struct {
-	Email string `json:"email"`
-}
+
 
 func NewForgotPasswordService( db mysql.ForgotPassword)forgotPasswordService{
 	return forgotPasswordService{
@@ -33,14 +31,14 @@ func ForgotPassword(router *mux.Router, db mysql.ForgotPassword, expirationDateI
 	service := NewForgotPasswordService(db)
 	router.HandleFunc(forgotPasswordPath, func(writer http.ResponseWriter, request *http.Request) {
 
-		var req ForgotPasswordReq
+		var req api.ForgotPasswordReq
 		err := parseRequest(writer, request,&req)
 		if err!=nil {
 			return
 		}
 		fmt.Println(req)
 
-		account, err :=service.db.GetProfileInfoByEmailAndAccountType(req.Email,model.Basic)
+		account, err :=service.db.GetProfileInfoByEmailAndAccountType(req.Email,api.Basic)
 		if err != nil {
 			WrapBadRequestResponse(writer, err)
 			return

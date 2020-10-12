@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"auth1/api"
 	"auth1/pkg/mysql"
 	"auth1/pkg/mysql/model"
 	"crypto/rand"
@@ -23,13 +24,13 @@ func NewSignInService(db mysql.SignIn) signInService {
 	}
 }
 
-func (s *signInService) signIn(req UserSignReq) (bool, error) {
+func (s *signInService) signIn(req api.UserSignReq) (bool, error) {
 	encrypterPassword := hashPassword(req.Password)
 
 	return s.db.IsLoginGranted(req.Email, encrypterPassword)
 }
 
-func (s *signInService) getProfileInfo(req UserSignReq) (*model.Account, error) {
+func (s *signInService) getProfileInfo(req api.UserSignReq) (*model.Account, error) {
 	return s.db.GetProfileInfoByEmailAndAccountType(req.Email, req.AccountType)
 }
 
@@ -56,7 +57,7 @@ func SignIn(router *mux.Router, db mysql.SignIn) {
 	router.HandleFunc(signInPath,
 		func(writer http.ResponseWriter, request *http.Request) {
 
-			var req UserSignReq
+			var req api.UserSignReq
 			err := parseRequest(writer, request, &req)
 			if err != nil {
 				return

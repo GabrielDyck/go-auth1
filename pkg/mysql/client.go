@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"auth1/api"
 	"auth1/pkg/mysql/model"
 	"database/sql"
 	"fmt"
@@ -49,7 +50,7 @@ func NewClient(address, schema, username string) Client {
 
 
 
-func (c *client) GetProfileInfoByEmailAndAccountType(email string, accountType model.AccountType) (*model.Account, error) {
+func (c *client) GetProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*model.Account, error) {
 	row, err := c.db.Query("SELECT ID, EMAIL, FULLNAME, ADDRESS, ACCOUNT_TYPE,PHONE FROM ACCOUNTS WHERE EMAIL = ?  AND ACCOUNT_TYPE !=?;", email, accountType)
 
 	if err != nil {

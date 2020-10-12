@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"auth1/api"
 	"auth1/pkg/mysql"
 	"errors"
 	"fmt"
@@ -13,9 +14,6 @@ const (
 	resetPasswordPath = "/resetPassword"
 )
 
-type ResetPasswordReq struct {
-	Password string `json:"password"`
-}
 
 type resetPasswordService struct {
 	db mysql.ResetPassword
@@ -35,7 +33,7 @@ func ResetPassword(router *mux.Router, db mysql.ResetPassword) {
 
 		token := request.Header.Get("FORGOT_TOKEN")
 
-		var req ResetPasswordReq
+		var req api.ResetPasswordReq
 		err := parseRequest(writer, request, &req)
 		if err != nil {
 			return

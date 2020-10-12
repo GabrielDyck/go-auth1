@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"auth1/api"
 	"auth1/pkg/mysql"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -24,7 +25,7 @@ func NewSignUpService(db mysql.SignUp) signupService {
 	}
 }
 
-func (s *signupService) signUp(req UserSignReq) error {
+func (s *signupService) signUp(req api.UserSignReq) error {
     hashedPassword := hashPassword(req.Password)
 	return s.db.SignUpAccount(req.Email,hashedPassword,req.AccountType)
 }
@@ -35,7 +36,7 @@ func SignUp(router *mux.Router, 	client mysql.SignUp) {
 	service:= NewSignUpService(client)
 	router.HandleFunc(signUpPath, func(writer http.ResponseWriter, request *http.Request) {
 
-		var req UserSignReq
+		var req api.UserSignReq
 		err := parseRequest(writer, request,&req)
 		if err!=nil {
 			return

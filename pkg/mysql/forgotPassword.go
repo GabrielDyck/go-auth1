@@ -1,12 +1,13 @@
 package mysql
 
 import (
+	"auth1/api"
 	"auth1/pkg/mysql/model"
 	"fmt"
 )
 
 type ForgotPassword interface {
-	GetProfileInfoByEmailAndAccountType(email string, accountType model.AccountType) (*model.Account, error)
+	GetProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*model.Account, error)
 	CreateForgotPasswordToken(id int64, expirationDateInMin int, token string) error
 }
 

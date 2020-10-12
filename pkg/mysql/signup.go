@@ -1,16 +1,16 @@
 package mysql
 
 import (
-	"auth1/pkg/mysql/model"
+	"auth1/api"
 	"fmt"
 )
 
 type SignUp interface {
-	SignUpAccount(email, password string, accountType model.AccountType) error
+	SignUpAccount(email, password string, accountType api.AccountType) error
 }
 
 
-func (c *client) SignUpAccount(email, password string, accountType model.AccountType) error {
+func (c *client) SignUpAccount(email, password string, accountType api.AccountType) error {
 
 	stmt, err := c.db.Prepare(
 		"INSERT INTO ACCOUNTS(EMAIL,PASSWORD,ACCOUNT_TYPE,CREATION_DATE)" +

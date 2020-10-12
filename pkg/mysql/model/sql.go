@@ -1,19 +1,17 @@
 package model
 
-import "time"
-
-type AccountType string
-
-const(
-	Basic  AccountType = "BASIC"
-	Google AccountType = "GOOGLE"
+import (
+	"auth1/api"
+	"time"
 )
+
+
 type Account struct {
 	ID          int64
 	Email       string
 	Fullname    string
 	Address     string
-	AccountType AccountType
+	AccountType api.AccountType
 	Phone       string
 }
 
