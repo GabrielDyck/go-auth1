@@ -38,14 +38,14 @@ func (c *client) IsLoginGranted(email, password string) (bool, error) {
 func (c *client) CreateAuthorizationToken(id int64, token string) error {
 
 	stmt, err := c.db.Prepare(
-		"INSERT INTO SESSION_TOKENS(TOKEN,ACCOUNT_ID,EXPIRATION_DATE)" +
+		"INSERT INTO SESSION_TOKENS(TOKEN,ACCOUNT_ID)" +
 			"VALUES (?,?)")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(id, token)
+	_, err = stmt.Exec(token,id)
 
 	if err != nil {
 		return err

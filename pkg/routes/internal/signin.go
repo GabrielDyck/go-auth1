@@ -37,12 +37,12 @@ func (s *signInService) getProfileInfo(req api.UserSignReq) (*model.Account, err
 
 
 func (s *signInService) generateSessionToken(id int64) (string, error) {
-	token := make([]byte, 16)
+	token := make([]byte, 255)
 	_, err := rand.Read(token)
 	if err != nil {
 		return "", err
 	}
-	tokenString := string(token)
+	tokenString := fmt.Sprintf("%X",token)
 	err = s.db.CreateAuthorizationToken(id, tokenString)
 
 	if err != nil {

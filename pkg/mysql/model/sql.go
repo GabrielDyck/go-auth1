@@ -9,10 +9,10 @@ import (
 type Account struct {
 	ID          int64
 	Email       string
-	Fullname    string
-	Address     string
+	Fullname    *string
+	Address     *string
 	AccountType api.AccountType
-	Phone       string
+	Phone       *string
 }
 
 

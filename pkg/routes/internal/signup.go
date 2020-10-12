@@ -37,12 +37,12 @@ func (s *signupService) signUpBasicAccount(req api.UserSignReq) error {
 func (s *signupService) generateSessionToken(id int64) (string, error) {
 	fmt.Println("generateSessionToken")
 
-	token := make([]byte, 16)
+	token := make([]byte, 128)
 	_, err := rand.Read(token)
 	if err != nil {
 		return "", err
 	}
-	tokenString := string(token)
+	tokenString := fmt.Sprintf("%X",token)
 	err = s.db.CreateAuthorizationToken(id, tokenString)
 
 	if err != nil {
