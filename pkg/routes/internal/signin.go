@@ -5,6 +5,7 @@ import (
 	"auth1/pkg/mysql"
 	"auth1/pkg/mysql/model"
 	"crypto/rand"
+	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -75,6 +76,68 @@ func SignIn(router *mux.Router, service signInService) {
 				builtResponse(writer, http.StatusInternalServerError)
 				return
 			}
+
+			switch req.AccountType {
+
+			case api.Basic:
+				already, err := service.accountAlreadyExists(req.Email)
+
+				if err != nil {
+					WrapInternalErrorResponse(writer, err)
+				}
+
+				if already {
+					WrapBadRequestResponse(writer, errors.New("user already registered"))
+					return
+				}
+
+				err = service.signUpBasicAccount(req)
+				if err != nil {
+					WrapInternalErrorResponse(writer, err)
+					return
+				}
+
+				account, err = service.getProfileInfoByEmailAndAccountType(req.Email, api.Basic)
+				if err != nil {
+					WrapInternalErrorResponse(writer, err)
+					return
+				}
+
+			case api.Google:
+				err = service.signBasicUpGoogleAccount(req)
+				account, err = service.getProfileInfoByEmailAndAccountType(req.Email, api.Basic)
+				if err != nil {
+					WrapInternalErrorResponse(writer, err)
+					return
+				}
+
+				if account ==nil {
+					err=service.signBasicUpGoogleAccount(req)
+					if err != nil {
+						WrapInternalErrorResponse(writer, err)
+						return
+					}
+				}
+
+
+				token,err:= service.generateSessionToken(account.ID)
+				if err != nil {
+					WrapInternalErrorResponse(writer, err)
+					return
+				}
+
+				writer.Header().Set("AUTHORIZATION",token)
+
+			default:
+				WrapBadRequestResponse(writer, errors.New("unknown account type"))
+				return
+
+			}
+			WrapOkEmptyResponse(writer)
+
+
+
+
 
 			token, err :=service.generateSessionToken(profileInfo.ID)
 

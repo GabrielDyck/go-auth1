@@ -137,7 +137,7 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 			return
 
 		}
-
+		WrapOkEmptyResponse(writer)
 	}).Methods("POST")
 
 	router.HandleFunc(accountAlreadyExistsPath, func(writer http.ResponseWriter, request *http.Request) {

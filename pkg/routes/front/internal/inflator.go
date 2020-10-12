@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"auth1/pkg/routes/internal"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
@@ -62,7 +63,7 @@ func (t *TemplateInflator) AddTemplates(router *mux.Router) {
 func (t *TemplateInflator) inflateLoginTemplate(rw http.ResponseWriter, req *http.Request) {
 	_, err := rw.Write(t.loginTemplate)
 	if err != nil {
-		WrapInternalErrorResponse(rw, err)
+		internal.WrapInternalErrorResponse(rw, err)
 		return
 	}
 }
@@ -70,7 +71,7 @@ func (t *TemplateInflator) inflateLoginTemplate(rw http.ResponseWriter, req *htt
 func (t *TemplateInflator) inflateSignUpTemplate(rw http.ResponseWriter, req *http.Request) {
 	_, err := rw.Write(t.signUpTemplate)
 	if err != nil {
-		WrapInternalErrorResponse(rw, err)
+		internal.WrapInternalErrorResponse(rw, err)
 		return
 	}
 }
@@ -78,7 +79,7 @@ func (t *TemplateInflator) inflateSignUpTemplate(rw http.ResponseWriter, req *ht
 func (t *TemplateInflator) inflateEditProfileTemplate(rw http.ResponseWriter, req *http.Request) {
 	_, err := rw.Write(t.editProfileTemplate)
 	if err != nil {
-		WrapInternalErrorResponse(rw, err)
+		internal.WrapInternalErrorResponse(rw, err)
 		return
 	}
 }
@@ -86,7 +87,7 @@ func (t *TemplateInflator) inflateEditProfileTemplate(rw http.ResponseWriter, re
 func (t *TemplateInflator) inflateProfileInfoTemplate(rw http.ResponseWriter, req *http.Request) {
 	_, err := rw.Write(t.profileInfoTemplate)
 	if err != nil {
-		WrapInternalErrorResponse(rw, err)
+		internal.WrapInternalErrorResponse(rw, err)
 		return
 	}
 }
@@ -94,7 +95,7 @@ func (t *TemplateInflator) inflateProfileInfoTemplate(rw http.ResponseWriter, re
 func (t *TemplateInflator) inflateForgotPasswordTemplate(rw http.ResponseWriter, req *http.Request) {
 	_, err := rw.Write(t.forgotPasswordTemplate)
 	if err != nil {
-		WrapInternalErrorResponse(rw, err)
+		internal.WrapInternalErrorResponse(rw, err)
 		return
 	}
 }
@@ -102,7 +103,7 @@ func (t *TemplateInflator) inflateForgotPasswordTemplate(rw http.ResponseWriter,
 func (t *TemplateInflator) inflateResetPasswordTemplate(rw http.ResponseWriter, req *http.Request) {
 	_, err := rw.Write(t.resetPasswordTemplate)
 	if err != nil {
-		WrapInternalErrorResponse(rw, err)
+		internal.WrapInternalErrorResponse(rw, err)
 		return
 	}
 }

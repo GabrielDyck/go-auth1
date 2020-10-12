@@ -73,6 +73,12 @@ func WrapBadRequestResponse(writer http.ResponseWriter, err error) {
 
 }
 
+
+func WrapOkEmptyResponse(writer http.ResponseWriter) {
+	wrapResponse(writer,[]byte("{}"),http.StatusOK)
+}
+
+
 func hashPassword(pass string) string {
 	hasher := sha256.New()
 	hasher.Write([]byte(pass))

@@ -8,32 +8,55 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
     <script>
-        function onSignIn(googleUser) {
-            // Useful data for your client-side scripts:
-            var profile = googleUser.getBasicProfile();
-            console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-            console.log('Full Name: ' + profile.getName());
-            console.log('Given Name: ' + profile.getGivenName());
-            console.log('Family Name: ' + profile.getFamilyName());
-            console.log("Image URL: " + profile.getImageUrl());
-            console.log("Email: " + profile.getEmail());
-
-            // The ID token you need to pass to your backend:
-            var id_token = googleUser.getAuthResponse().id_token;
-            console.log("ID Token: " + id_token);
-
-            $.ajax({
-                    type: "POST",
-                    contentType: "application/json",
-                    url: "backend/signup",
-                    data: JSON.stringify({
-                        "email": profile.getEmail(),
-                        "account_type": "GOOGLE"})
-                },
-            ).done(function (data, textStatus, xhr) {
-                console.log(xhr.getResponseHeader('AUTHORIZATION'));
-            });
+        var clicked=false;//Global Variable
+        function ClickLogin()
+        {
+            clicked=true;
         }
+
+        function callSignIn(data){
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "backend/signin",
+                data: JSON.stringify(data),
+                success: function (data, status, res) {
+                    document.cookie = "Authorization=" + res.getResponseHeader("Authorization");
+                    window.location.replace("http://localhost:8080/profile-info");
+                },
+                error: function (response) {
+                    alert(response.reason);
+                }
+            })
+        }
+
+        function basicOnSignIn(){
+
+
+            data= {
+                email: document.getElementById("email").value,
+                password:document.getElementById("password").value,
+                account_type: "BASIC"
+
+            }
+            console.log(data)
+            callSignIn(data)
+
+
+        }
+
+        function googleOnSignIn(googleUser) {
+            // Useful data for your client-side scripts:
+            if (clicked) {
+                var profile = googleUser.getBasicProfile();
+                data = {
+                    "email": profile.getEmail(),
+                    "account_type": "GOOGLE"
+                }
+
+                callSignIn(data)
+            }
+        };
     </script>
 </head>
 
@@ -52,19 +75,19 @@
 </div>
 
 <div>
-    <button name="login">
+    <button name="login" onclick="basicOnSignIn()">
         Login
     </button>
 
 
-    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    <div class="g-signin2" data-onsuccess="googleOnSignIn" onclick="ClickLogin()" ></div>
 
 
 </div>
 
 <div>
-    <a href="">Create user</a>
-    <a href="">Forgot password?</a>
+    <a href="/signup">Create user</a>
+    <a href="/forgot-password">Forgot password?</a>
 </div>
 </body>
 

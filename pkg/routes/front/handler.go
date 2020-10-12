@@ -3,6 +3,7 @@ package front
 import (
 	"auth1/pkg/mysql"
 	"auth1/pkg/routes/front/internal"
+	routesInternal "auth1/pkg/routes/internal"
 	"errors"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -39,12 +40,12 @@ func (c *FrontRouter) secureMiddleware(next http.Handler) http.Handler {
 		authenticated, err := c.db.IsAuthenticated(token)
 
 		if err !=nil{
-			internal.WrapInternalErrorResponse(w,err)
+			routesInternal .WrapInternalErrorResponse(w,err)
 			return
 		}
 
 		if !authenticated{
-			internal.WrapBadRequestResponse(w,errors.New("not Authenticated"))
+			routesInternal .WrapBadRequestResponse(w,errors.New("not Authenticated"))
 			return
 		}
 
