@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"auth1/api"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
@@ -11,10 +12,6 @@ import (
 
 
 
-
-type ErrorMSG struct {
-	Reason string `json:"reason"`
-}
 
 func builtResponse(response interface{}, statusCode int)([]byte ,int) {
 
@@ -33,8 +30,8 @@ func builtResponse(response interface{}, statusCode int)([]byte ,int) {
 }
 
 
-func builtErrorBodyMsg(err error) ErrorMSG {
-	return ErrorMSG{Reason: err.Error()}
+func builtErrorBodyMsg(err error) api.ErrorMSG {
+	return api.ErrorMSG{Reason: err.Error()}
 }
 
 

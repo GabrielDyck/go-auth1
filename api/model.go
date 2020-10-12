@@ -7,6 +7,12 @@ const(
 	Google AccountType = "GOOGLE"
 )
 
+
+
+type ErrorMSG struct {
+	Reason string `json:"reason"`
+}
+
 type ForgotPasswordReq struct {
 	Email string `json:"email"`
 }
