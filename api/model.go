@@ -23,8 +23,9 @@ type ResetPasswordReq struct {
 
 
 type UserSignReq struct {
-	Email string `json:"email"`
-	Password string`json:"password"`
+	Email       string      `json:"email"`
+	Password    string      `json:"password"`
+	GoogleToken string      `json:"token"`
 	AccountType AccountType `json:"account_type"`
 }
 

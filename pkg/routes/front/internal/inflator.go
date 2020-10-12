@@ -8,7 +8,7 @@ import (
 )
 
 type TemplateInflator struct {
-	loginTemplate          []byte
+	signInTemplate         []byte
 	signUpTemplate         []byte
 	editProfileTemplate    []byte
 	profileInfoTemplate    []byte
@@ -17,7 +17,7 @@ type TemplateInflator struct {
 }
 
 func NewTemplateInflator() TemplateInflator {
-	loginTemplate, err := ioutil.ReadFile("resources/html/login.html")
+	loginTemplate, err := ioutil.ReadFile("resources/html/signin.html")
 	panicIfError(err)
 	signUpTemplate, err := ioutil.ReadFile("resources/html/signup.html")
 	panicIfError(err)
@@ -34,12 +34,12 @@ func NewTemplateInflator() TemplateInflator {
 	resetPasswordTemplate, err := ioutil.ReadFile("resources/html/reset-password.html")
 	panicIfError(err)
 	return TemplateInflator{
-		loginTemplate:          loginTemplate,
+		signInTemplate:         loginTemplate,
 		signUpTemplate:         signUpTemplate,
 		editProfileTemplate:    editProfileTemplate,
 		profileInfoTemplate:    profileInfoTemplate,
 		forgotPasswordTemplate: forgotPasswordTemplate,
-		resetPasswordTemplate: resetPasswordTemplate,
+		resetPasswordTemplate:  resetPasswordTemplate,
 	}
 
 }
@@ -51,7 +51,7 @@ func panicIfError(err error) {
 }
 
 func (t *TemplateInflator) AddTemplates(router *mux.Router) {
-	router.HandleFunc("/login", t.inflateLoginTemplate)
+	router.HandleFunc("/signin", t.inflateSignInTemplate)
 	router.HandleFunc("/signup", t.inflateSignUpTemplate)
 	router.HandleFunc("/edit-profile", t.inflateEditProfileTemplate)
 	router.HandleFunc("/profile-info", t.inflateProfileInfoTemplate)
@@ -60,8 +60,8 @@ func (t *TemplateInflator) AddTemplates(router *mux.Router) {
 
 }
 
-func (t *TemplateInflator) inflateLoginTemplate(rw http.ResponseWriter, req *http.Request) {
-	_, err := rw.Write(t.loginTemplate)
+func (t *TemplateInflator) inflateSignInTemplate(rw http.ResponseWriter, req *http.Request) {
+	_, err := rw.Write(t.signInTemplate)
 	if err != nil {
 		internal.WrapInternalErrorResponse(rw, err)
 		return

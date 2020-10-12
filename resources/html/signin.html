@@ -21,11 +21,10 @@
                 url: "backend/signin",
                 data: JSON.stringify(data),
                 success: function (data, status, res) {
-                    document.cookie = "Authorization=" + res.getResponseHeader("Authorization");
-                    window.location.replace("http://localhost:8080/profile-info");
-                },
+                    alert("Sign In Successfully")
+                    },
                 error: function (response) {
-                    alert(response.reason);
+                    alert("Sign In Error "+ response.reason);
                 }
             })
         }
@@ -37,7 +36,6 @@
                 email: document.getElementById("email").value,
                 password:document.getElementById("password").value,
                 account_type: "BASIC"
-
             }
             console.log(data)
             callSignIn(data)
@@ -54,6 +52,7 @@
                     "account_type": "GOOGLE"
                 }
 
+                console.log("")
                 callSignIn(data)
             }
         };

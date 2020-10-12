@@ -51,7 +51,7 @@ func NewClient(address, schema, username string) Client {
 
 
 func (c *client) GetProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*model.Account, error) {
-	row, err := c.db.Query("SELECT ID, EMAIL, FULLNAME, ADDRESS, ACCOUNT_TYPE,PHONE FROM ACCOUNTS WHERE EMAIL = ?  AND ACCOUNT_TYPE !=?;", email, accountType)
+	row, err := c.db.Query("SELECT ID, EMAIL, FULLNAME, ADDRESS, ACCOUNT_TYPE,PHONE FROM ACCOUNTS WHERE EMAIL = ?  AND ACCOUNT_TYPE =?;", email, accountType)
 
 	if err != nil {
 		return nil, err

@@ -4,6 +4,7 @@ import (
 	"auth1/api"
 	"auth1/pkg/mysql"
 	"auth1/pkg/mysql/model"
+	"auth1/pkg/oauth"
 	"crypto/rand"
 	"errors"
 	"fmt"
@@ -43,7 +44,11 @@ func (s *signupService) generateSessionToken(id int64) (string, error) {
 		return "", err
 	}
 	tokenString := fmt.Sprintf("%X",token)
-	err = s.db.CreateAuthorizationToken(id, tokenString)
+	return s.createAuthToken(id, tokenString)
+}
+
+func (s *signupService) createAuthToken(id int64, tokenString string) (string, error) {
+	err := s.db.CreateAuthorizationToken(id, tokenString)
 
 	if err != nil {
 		return "", err
@@ -52,9 +57,9 @@ func (s *signupService) generateSessionToken(id int64) (string, error) {
 	return tokenString, nil
 }
 
-func (s *signupService) signBasicUpGoogleAccount(req api.UserSignReq) error {
+func (s *signupService) signUpGoogleAccount(email string) error {
 	fmt.Println("SignUpGoogleAccount")
-	return s.db.SignUpGoogleAccount(req.Email)
+	return s.db.SignUpGoogleAccount(email)
 }
 func (s *signupService) accountAlreadyExists(email string) (bool, error) {
 	fmt.Println("AccountAlreadyExists")
@@ -88,6 +93,7 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 
 			if err != nil {
 				WrapInternalErrorResponse(writer, err)
+				return
 			}
 
 			if already {
@@ -108,34 +114,28 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 			}
 
 		case api.Google:
-			err = service.signBasicUpGoogleAccount(req)
-			account, err = service.getProfileInfoByEmailAndAccountType(req.Email, api.Basic)
+			tokenInfo,err := oauth.VerifyIdToken(req.GoogleToken)
+			if err != nil {
+				WrapBadRequestResponse(writer, err)
+				return
+			}
+
+			account, err = service.getProfileInfoByEmailAndAccountType(tokenInfo.Email, api.Google)
 			if err != nil {
 				WrapInternalErrorResponse(writer, err)
 				return
 			}
 
-			if account ==nil {
-				err=service.signBasicUpGoogleAccount(req)
+			if account == nil {
+				err=service.signUpGoogleAccount(tokenInfo.Email)
 				if err != nil {
 					WrapInternalErrorResponse(writer, err)
 					return
 				}
 			}
-
-
-			token,err:= service.generateSessionToken(account.ID)
-			if err != nil {
-				WrapInternalErrorResponse(writer, err)
-				return
-			}
-
-			writer.Header().Set("AUTHORIZATION",token)
-
 		default:
 			WrapBadRequestResponse(writer, errors.New("unknown account type"))
 			return
-
 		}
 		WrapOkEmptyResponse(writer)
 	}).Methods("POST")

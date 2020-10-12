@@ -1,6 +1,63 @@
 <html>
 
-<head></head>
+<head>
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id"
+          content="250577030919-4i17m3p6iimsjkiu00o2lakl8bujhe4v.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <script>
+        var clicked=false;//Global Variable
+        function ClickLogin()
+        {
+            clicked=true;
+        }
+
+        function callSignUp(data){
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "backend/signup",
+                data: JSON.stringify(data),
+                success: function (data, status, res) {
+                    alert("Sign Up Successfully")
+                },
+                error: function (response) {
+                    alert("Sign Up Error "+ response.reason);
+                }
+            })
+        }
+
+        function basicOnSignUp(){
+
+
+            data= {
+                email: document.getElementById("email").value,
+                password:document.getElementById("password").value,
+                account_type: "BASIC"
+            }
+            console.log(data)
+            callSignUp(data)
+
+
+        }
+
+        function googleOnSignUp(googleUser) {
+            // Useful data for your client-side scripts:
+            if (clicked) {
+                data = {
+                    "account_type": "GOOGLE",
+                    "token": googleUser.getAuthResponse().id_token
+                }
+
+                console.log(data)
+                callSignUp(data)
+            }
+        };
+
+    </script>
+</head>
 <body>
 
 <h1>Sign Up</h1>
@@ -21,14 +78,12 @@
     </button>
 
 
-    <button name="google_login">
-        Create with Google Account
-    </button>
+    <div class="g-signin2" data-onsuccess="googleOnSignUp" onclick="ClickLogin()" ></div>
 
 </div>
 
 <div>
-    <a href="">Use existing account</a>
+    <a href="/signin">Use existing account</a>
 </div>
 </body>
 
