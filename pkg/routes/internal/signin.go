@@ -4,6 +4,7 @@ import (
 	"auth1/api"
 	"auth1/pkg/mysql"
 	"auth1/pkg/mysql/model"
+	"auth1/pkg/oauth"
 	"crypto/rand"
 	"errors"
 	"fmt"
@@ -13,29 +14,27 @@ import (
 
 const (
 	signInPath = "/signin"
-
 )
 
 type signInService struct {
-	db                  mysql.SignIn
+	db mysql.SignIn
 }
 
 func NewSignInService(db mysql.SignIn) signInService {
 	return signInService{
-		db:                  db,
+		db: db,
 	}
 }
 
-func (s *signInService) signIn(req api.UserSignReq) (bool, error) {
-	encrypterPassword := hashPassword(req.Password)
+func (s *signInService) signIn(email, password string) (bool, error) {
+	encrypterPassword := hashPassword(password)
 
-	return s.db.IsLoginGranted(req.Email, encrypterPassword)
+	return s.db.IsLoginGranted(email, encrypterPassword)
 }
 
-func (s *signInService) getProfileInfo(req api.UserSignReq) (*model.Account, error) {
-	return s.db.GetProfileInfoByEmailAndAccountType(req.Email, req.AccountType)
+func (s *signInService) getAccountByEmailAndAccountType(email string, accountType api.AccountType) (*model.Account, error) {
+	return s.db.GetProfileInfoByEmailAndAccountType(email, accountType)
 }
-
 
 func (s *signInService) generateSessionToken(id int64) (string, error) {
 	token := make([]byte, 255)
@@ -43,7 +42,7 @@ func (s *signInService) generateSessionToken(id int64) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tokenString := fmt.Sprintf("%X",token)
+	tokenString := fmt.Sprintf("%X", token)
 	err = s.db.CreateAuthorizationToken(id, tokenString)
 
 	if err != nil {
@@ -65,47 +64,59 @@ func SignIn(router *mux.Router, service signInService) {
 				return
 			}
 			fmt.Println(req)
-			_, err = service.signIn(req)
 
-			if err != nil {
-				WrapBadRequestResponse(writer, err)
-			}
-
-			profileInfo, err := service.getProfileInfo(req)
-			if err != nil {
-				builtResponse(writer, http.StatusInternalServerError)
-				return
-			}
-
+			var account *model.Account
 			switch req.AccountType {
 
 			case api.Basic:
+				isGranted, err := service.signIn(req.Email, req.Password)
 
-				panic("implement me")
+				if err != nil {
+					WrapBadRequestResponse(writer, err)
+					return
+				}
+
+				if !isGranted {
+					WrapBadRequestResponse(writer, errors.New("username or password are wrong"))
+					return
+				}
+
+				account, err = service.getAccountByEmailAndAccountType(req.Email, api.Basic)
+				if err != nil {
+					WrapInternalErrorResponse(writer, err)
+					return
+				}
+
 			case api.Google:
 
-				panic("implement me")
+				tokenInfo, err := oauth.VerifyIdToken(req.GoogleToken)
+				if err != nil {
+					WrapBadRequestResponse(writer, err)
+					return
+				}
+
+				account, err = service.getAccountByEmailAndAccountType(tokenInfo.Email, api.Google)
+				if err != nil {
+					WrapInternalErrorResponse(writer, err)
+					return
+				}
+
+				if account == nil {
+					WrapBadRequestResponse(writer, errors.New("user doesn't exists"))
+					return
+
+				}
+
 			default:
 				WrapBadRequestResponse(writer, errors.New("unknown account type"))
 				return
 
 			}
-			WrapOkEmptyResponse(writer)
-
-
-
-
-
-			token, err :=service.generateSessionToken(profileInfo.ID)
-
-			writer.Header().Set("AUTHORIZATION",token)
-			data, httpStatus := builtResponse(profileInfo, http.StatusOK)
+			token, err := service.generateSessionToken(account.ID)
+			writer.Header().Set("AUTHORIZATION", token)
+			data, httpStatus := builtResponse(account, http.StatusOK)
 			wrapResponse(writer, data, httpStatus)
 
 		}).Methods("POST")
 
-
-
-
 }
-

@@ -24,7 +24,7 @@
                     alert("Sign In Successfully")
                     },
                 error: function (response) {
-                    alert("Sign In Error "+ response.reason);
+                    alert("Sign In Error "+ JSON.parse(response.responseText).reason);
                 }
             })
         }
@@ -46,13 +46,13 @@
         function googleOnSignIn(googleUser) {
             // Useful data for your client-side scripts:
             if (clicked) {
-                var profile = googleUser.getBasicProfile();
                 data = {
-                    "email": profile.getEmail(),
-                    "account_type": "GOOGLE"
+                    "account_type": "GOOGLE",
+                    "token": googleUser.getAuthResponse().id_token
+
                 }
 
-                console.log("")
+                console.log(data)
                 callSignIn(data)
             }
         };
