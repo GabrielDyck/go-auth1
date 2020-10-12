@@ -24,13 +24,12 @@
                     alert("Sign Up Successfully")
                 },
                 error: function (response) {
-                    alert("Sign Up Error "+ response.reason);
+                    alert("Sign Up Error "+ JSON.parse(response.responseText).reason);
                 }
             })
         }
 
         function basicOnSignUp(){
-
 
             data= {
                 email: document.getElementById("email").value,
@@ -73,7 +72,7 @@
 </div>
 
 <div>
-    <button name="login">
+    <button name="create" onclick="basicOnSignUp()">
         Create
     </button>
 
