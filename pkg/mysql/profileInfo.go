@@ -1,23 +1,25 @@
 package mysql
 
-import "auth1/pkg/mysql/model"
+import (
+	"auth1/api"
+)
 
 type Account interface {
-	GetAccountById(id int64) (*model.Account, error)
+	GetAccountById(id int64) (*api.Account, error)
 }
 
 
-func (c *client) GetAccountById(id int64) (*model.Account, error) {
-	row, err := c.db.Query("SELECT ID, EMAIL, FULLNAME, ADDRESS, PHONE FROM ACCOUNTS WHERE ID = ?;", id)
+func (c *client) GetAccountById(id int64) (*api.Account, error) {
+	row, err := c.db.Query("SELECT ID, EMAIL, FULLNAME, ADDRESS, PHONE, ACCOUNT_TYPE FROM ACCOUNTS WHERE ID = ?;", id)
 
 	if err != nil {
 		return nil, err
 	}
-	var account model.Account
+	var account api.Account
 	if !row.Next() {
 		return nil, nil
 	}
-	err = row.Scan(&account.ID, &account.Email, &account.Fullname, &account.Address, &account.Phone)
+	err = row.Scan(&account.ID, &account.Email, &account.Fullname, &account.Address, &account.Phone, &account.AccountType)
 
 	if err != nil {
 		return nil, err

@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"auth1/api"
-	"auth1/pkg/mysql/model"
 	"fmt"
 )
 
@@ -11,7 +10,7 @@ type SignUp interface {
 	SignUpGoogleAccount(email string) error
 	AccountAlreadyExists(email string) (bool,error)
 	CreateAuthorizationToken(id int64, token string) error
-	GetProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*model.Account, error)
+	GetProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*api.Account, error)
 
 }
 

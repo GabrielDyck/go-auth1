@@ -1,8 +1,8 @@
 package internal
 
 import (
+	"auth1/api"
 	"auth1/pkg/mysql"
-	"auth1/pkg/mysql/model"
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -11,7 +11,9 @@ import (
 )
 
 const (
-	profilePath          = "/profile/{id}"
+	profilePath          = "/profile-info/{id}"
+	editProfilePath          = "/edit-profile/{id}"
+
 )
 
 type ProfileReq struct {
@@ -52,7 +54,7 @@ func GetProfileInfo(router *mux.Router, db mysql.Account) {
 }
 
 func EditProfileInfo(router *mux.Router, service profileInfoService) {
-	router.HandleFunc(profilePath, func(writer http.ResponseWriter, request *http.Request) {
+	router.HandleFunc(editProfilePath, func(writer http.ResponseWriter, request *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
 			WrapBadRequestResponse(writer, err)
@@ -84,7 +86,7 @@ func EditProfileInfo(router *mux.Router, service profileInfoService) {
 
 }
 
-func (s *profileInfoService) getProfileInfo(id int64) (*model.Account, error) {
+func (s *profileInfoService) getProfileInfo(id int64) (*api.Account, error) {
 	return s.db.GetAccountById(id)
 }
 

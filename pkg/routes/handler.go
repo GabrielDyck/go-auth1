@@ -72,7 +72,7 @@ func (c *CustomRouter) secureMiddleware(next http.Handler) http.Handler {
 		}
 
 		if !authenticated{
-			internal.WrapBadRequestResponse(w,errors.New("not Authenticated"))
+			internal.WrapNotAllowedRequestResponse(w,errors.New("not Authenticated"))
 			return
 		}
 

@@ -3,7 +3,6 @@ package internal
 import (
 	"auth1/api"
 	"auth1/pkg/mysql"
-	"auth1/pkg/mysql/model"
 	"auth1/pkg/oauth"
 	"crypto/rand"
 	"errors"
@@ -32,7 +31,7 @@ func (s *signInService) signIn(email, password string) (bool, error) {
 	return s.db.IsLoginGranted(email, encrypterPassword)
 }
 
-func (s *signInService) getAccountByEmailAndAccountType(email string, accountType api.AccountType) (*model.Account, error) {
+func (s *signInService) getAccountByEmailAndAccountType(email string, accountType api.AccountType) (*api.Account, error) {
 	return s.db.GetProfileInfoByEmailAndAccountType(email, accountType)
 }
 
@@ -65,7 +64,7 @@ func SignIn(router *mux.Router, service signInService) {
 			}
 			fmt.Println(req)
 
-			var account *model.Account
+			var account *api.Account
 			switch req.AccountType {
 
 			case api.Basic:

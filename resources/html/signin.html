@@ -18,10 +18,15 @@
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                url: "backend/signin",
+                url: "/backend/signin",
                 data: JSON.stringify(data),
                 success: function (data, status, res) {
                     alert("Sign In Successfully")
+                    document.cookie = "Authorization=" + res.getResponseHeader("Authorization");
+                    respBody= JSON.parse(res.responseText)
+
+                    window.location.replace("http://localhost:8080/profile-info/"+respBody.id);
+
                     },
                 error: function (response) {
                     alert("Sign In Error "+ JSON.parse(response.responseText).reason);

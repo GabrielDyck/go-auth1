@@ -1,5 +1,7 @@
 package api
 
+import "time"
+
 type AccountType string
 
 const(
@@ -33,3 +35,19 @@ type UserSessionTokenResponse struct {
 	SessionToken string `json:"session_token"`
 }
 
+
+type Account struct {
+	ID          int64 `json:"id"`
+	Email       string`json:"email"`
+	Fullname    *string`json:"fullname"`
+	Address     *string`json:"address"`
+	AccountType AccountType`json:"account_type"`
+	Phone       *string`json:"phone"`
+}
+
+
+type ForgotPasswordToken struct {
+	AccountID int64
+	Token string
+	ExpirationDate time.Time
+}

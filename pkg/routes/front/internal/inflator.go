@@ -54,7 +54,7 @@ func (t *TemplateInflator) AddTemplates(router *mux.Router) {
 	router.HandleFunc("/signin", t.inflateSignInTemplate)
 	router.HandleFunc("/signup", t.inflateSignUpTemplate)
 	router.HandleFunc("/edit-profile", t.inflateEditProfileTemplate)
-	router.HandleFunc("/profile-info", t.inflateProfileInfoTemplate)
+	router.HandleFunc("/profile-info/{id}", t.inflateProfileInfoTemplate)
 	router.HandleFunc("/forgot-password", t.inflateForgotPasswordTemplate)
 	router.HandleFunc("/reset-password", t.inflateResetPasswordTemplate)
 

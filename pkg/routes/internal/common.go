@@ -73,6 +73,13 @@ func WrapBadRequestResponse(writer http.ResponseWriter, err error) {
 
 }
 
+func WrapNotAllowedRequestResponse(writer http.ResponseWriter, err error) {
+	data, httpStatus := builtResponse(builtErrorBodyMsg(err), http.StatusMethodNotAllowed)
+	wrapResponse(writer,data,httpStatus)
+
+}
+
+
 
 func WrapOkEmptyResponse(writer http.ResponseWriter) {
 	wrapResponse(writer,[]byte("{}"),http.StatusOK)

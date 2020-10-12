@@ -1,13 +1,46 @@
 <html>
 
-<head></head>
+<head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <script>
+
+        function init() {
+            profileId = window.location.pathname.split("/").pop()
+
+            console.log(profileId)
+            $.ajax({
+                type: "GET",
+                contentType: "application/json",
+                url: "/backend/profile-info/" + profileId,
+                success: function (data, status, res) {
+                    alert("Get Profile Info Successfully")
+
+                    respBody = JSON.parse(res.responseText)
+
+                    document.getElementById("fullname").innerHTML = respBody.fullname
+                    document.getElementById("email").innerHTML = respBody.email
+                    document.getElementById("address").innerHTML = respBody.address
+                    document.getElementById("phone").innerHTML = respBody.phone
+                },
+
+                error: function (response) {
+                    alert("Get Profile Info Error " + JSON.parse(response.responseText).reason);
+                }
+            })
+
+        }
+
+        init()
+    </script>
+</head>
 <body>
 
 <h1>Profile</h1>
 
 <div>
     <button name="saveAndContinue">
-       Logout
+        Logout
     </button>
 
 
@@ -18,22 +51,27 @@
 </div>
 <div>
     <label for="fullname">Fullname</label>
+    <p id="fullname"></p>
 </div>
 
 <div>
     <label for="address">Address</label>
+    <p id="address"></p>
+
 </div>
 
 
 <div>
     <label for="phone">Phone</label>
+    <p id="phone"></p>
+
 </div>
 
 <div>
     <label for="email">Email</label>
+    <p id="email"></p>
+
 </div>
-
-
 
 
 </body>

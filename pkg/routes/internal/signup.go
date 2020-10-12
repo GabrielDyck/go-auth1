@@ -3,7 +3,6 @@ package internal
 import (
 	"auth1/api"
 	"auth1/pkg/mysql"
-	"auth1/pkg/mysql/model"
 	"auth1/pkg/oauth"
 	"crypto/rand"
 	"errors"
@@ -67,7 +66,7 @@ func (s *signupService) accountAlreadyExists(email string) (bool, error) {
 	return s.db.AccountAlreadyExists(email)
 }
 
-func (s *signupService) getProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*model.Account, error) {
+func (s *signupService) getProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*api.Account, error) {
 	fmt.Println("GetProfileInfoByEmailAndAccountType")
 	return s.db.GetProfileInfoByEmailAndAccountType(email, accountType)
 }
@@ -84,7 +83,7 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 		}
 		fmt.Println(req)
 
-		var account *model.Account
+		var account *api.Account
 
 		switch req.AccountType {
 

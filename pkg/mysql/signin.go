@@ -2,13 +2,12 @@ package mysql
 
 import (
 	"auth1/api"
-	"auth1/pkg/mysql/model"
 	"fmt"
 )
 
 type SignIn interface {
 	IsLoginGranted(email, password string) (bool, error)
-	GetProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*model.Account, error)
+	GetProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*api.Account, error)
 	CreateAuthorizationToken(id int64, token string) error
 }
 
