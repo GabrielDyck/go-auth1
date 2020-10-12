@@ -19,12 +19,14 @@ type SignUp interface {
 func (c *client) SignUpBasicAccount(email, password string) error {
 
 	stmt, err := c.db.Prepare(
-		"INSERT INTO ACCOUNTS(EMAIL,PASSWORD,ACCOUNT_TYPE,CREATION_DATE)" +
-			"VALUES (?,?,\"BASIC\",NOW())")
+		"INSERT INTO ACCOUNTS(EMAIL,PASSWORD,ACCOUNT_TYPE)" +
+			"VALUES (?,?,\"BASIC\")")
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 
+	fmt.Println(stmt)
 	result, err := stmt.Exec(email, password)
 
 	if err != nil {
@@ -38,12 +40,13 @@ func (c *client) SignUpBasicAccount(email, password string) error {
 func (c *client) SignUpGoogleAccount(email string) error {
 
 	stmt, err := c.db.Prepare(
-		"INSERT INTO ACCOUNTS(EMAIL,ACCOUNT_TYPE,CREATION_DATE)" +
-				"VALUES (?,?,\"GOOGLE\",NOW())")
+		"INSERT INTO ACCOUNTS(EMAIL,ACCOUNT_TYPE)" +
+				"VALUES (?,\"GOOGLE\")")
+
 	if err != nil {
 		return err
 	}
-
+	defer stmt.Close()
 	result, err := stmt.Exec(email)
 
 	if err != nil {

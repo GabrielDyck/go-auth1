@@ -43,6 +43,7 @@ func (c *client) CreateAuthorizationToken(id int64, token string) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(id, token)
 

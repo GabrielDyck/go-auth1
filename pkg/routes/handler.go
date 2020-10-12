@@ -4,6 +4,7 @@ import (
 	"auth1/pkg/config"
 	"auth1/pkg/mail"
 	"auth1/pkg/mysql"
+	"auth1/pkg/routes/front"
 	"auth1/pkg/routes/internal"
 	"errors"
 	"github.com/gorilla/mux"
@@ -22,18 +23,24 @@ func NewCustomRouter(client mysql.Client, configuration config.Configuration) Cu
 	}
 }
 
-func (c *CustomRouter) AddRoutes(router *mux.Router, expirationDateInMin int, emailSender mail.Sender) {
-	router.Use(c.commonMiddleware)
-	internal.HealthCheck(router)
+func (c *CustomRouter) AddFrontendRoutes() {
+	htmlRouter := mux.NewRouter()
+	customRouter:= front.NewFrontRouter()
+	customRouter.AddRoutes(htmlRouter)
+}
+func (c *CustomRouter) AddBackendRoutes(backendRouter *mux.Router, expirationDateInMin int, emailSender mail.Sender) {
+	backendRouter.Use(c.commonMiddleware)
+
+	internal.HealthCheck(backendRouter)
 	signInService := internal.NewSignInService(c.client)
 
-	internal.SignIn(router, signInService)
-	internal.SignUp(router, c.client)
-	internal.GetProfileInfo(router, c.client)
-	internal.Logout(router)
-	internal.ForgotPassword(router,c.client,expirationDateInMin, emailSender)
-	internal.ResetPassword(router,c.client)
-	http.Handle("/",router)
+	internal.SignIn(backendRouter, signInService)
+	internal.SignUp(backendRouter, c.client)
+	internal.GetProfileInfo(backendRouter, c.client)
+	internal.Logout(backendRouter)
+	internal.ForgotPassword(backendRouter,c.client,expirationDateInMin, emailSender)
+	internal.ResetPassword(backendRouter,c.client)
+	http.Handle("/backend/",backendRouter)
 }
 func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {
 	router.Use(c.commonMiddleware)

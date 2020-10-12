@@ -16,10 +16,11 @@ func main() {
 	configuration := config.Read()
 	application := app.SetUpApplication(configuration)
 	application.Client.Connect()
-	var router = mux.NewRouter()
+	var router = mux.NewRouter().PathPrefix("/backend").Subrouter()
 	var authRouter = mux.NewRouter().PathPrefix("/auth").Subrouter()
 	customRouter := routes.NewCustomRouter(application.Client,configuration)
-	customRouter.AddRoutes(router,configuration.ExpirationDateInMin,emailSender)
+	customRouter.AddBackendRoutes(router,configuration.ExpirationDateInMin,emailSender)
+	customRouter.AddFrontendRoutes()
 	customRouter.AddAuthRoutes(authRouter)
 
 

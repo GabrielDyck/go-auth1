@@ -19,6 +19,7 @@ func (c *client) CreateForgotPasswordToken(id int64, expirationDateInMin int,tok
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 
 	result, err := stmt.Exec( id, token, expirationDateInMin)
 

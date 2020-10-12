@@ -27,12 +27,16 @@ func NewSignUpService(db mysql.SignUp) signupService {
 }
 
 func (s *signupService) signUpBasicAccount(req api.UserSignReq) error {
+	fmt.Println("signUpBasicAccount")
+
 	hashedPassword := hashPassword(req.Password)
 	return s.db.SignUpBasicAccount(req.Email, hashedPassword)
 }
 
 // TODO : extract with signin
 func (s *signupService) generateSessionToken(id int64) (string, error) {
+	fmt.Println("generateSessionToken")
+
 	token := make([]byte, 16)
 	_, err := rand.Read(token)
 	if err != nil {
@@ -49,13 +53,17 @@ func (s *signupService) generateSessionToken(id int64) (string, error) {
 }
 
 func (s *signupService) signBasicUpGoogleAccount(req api.UserSignReq) error {
+	fmt.Println("SignUpGoogleAccount")
 	return s.db.SignUpGoogleAccount(req.Email)
 }
 func (s *signupService) accountAlreadyExists(email string) (bool, error) {
+	fmt.Println("AccountAlreadyExists")
+
 	return s.db.AccountAlreadyExists(email)
 }
 
 func (s *signupService) getProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*model.Account, error) {
+	fmt.Println("GetProfileInfoByEmailAndAccountType")
 	return s.db.GetProfileInfoByEmailAndAccountType(email, accountType)
 }
 
@@ -107,6 +115,14 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 				return
 			}
 
+			if account ==nil {
+				err=service.signBasicUpGoogleAccount(req)
+				if err != nil {
+					WrapInternalErrorResponse(writer, err)
+					return
+				}
+			}
+
 
 			token,err:= service.generateSessionToken(account.ID)
 			if err != nil {
@@ -117,7 +133,7 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 			writer.Header().Set("AUTHORIZATION",token)
 
 		default:
-			WrapBadRequestResponse(writer, errors.New("user already registered"))
+			WrapBadRequestResponse(writer, errors.New("unknown account type"))
 			return
 
 		}
