@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	forgotPasswordPath = "/forgotPassword"
+	forgotPasswordPath = "/forgot-password"
 )
 
 type forgotPasswordService struct {
@@ -59,7 +59,7 @@ func ForgotPassword(router *mux.Router, db mysql.ForgotPassword, expirationDateI
 
 		emailSender.SendEmail(req.Email,token)
 
-		writer.WriteHeader(http.StatusOK)
+		WrapOkEmptyResponse(writer)
 
 	}).Methods("POST")
 }
@@ -67,5 +67,6 @@ func ForgotPassword(router *mux.Router, db mysql.ForgotPassword, expirationDateI
 func (f * forgotPasswordService) tokenGenerator() string {
 	b := make([]byte, 32)
 	_,_=rand.Read(b)
-	return fmt.Sprintf("%x", b)
+	return 	fmt.Sprintf("%X", b)
+
 }
