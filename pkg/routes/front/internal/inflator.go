@@ -51,6 +51,7 @@ func panicIfError(err error) {
 }
 
 func (t *TemplateInflator) AddTemplates(router *mux.Router) {
+	router.HandleFunc("/", t.inflateSignInTemplate)
 	router.HandleFunc("/signin", t.inflateSignInTemplate)
 	router.HandleFunc("/signup", t.inflateSignUpTemplate)
 	router.HandleFunc("/edit-profile", t.inflateEditProfileTemplate)

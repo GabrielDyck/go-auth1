@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -27,7 +28,7 @@ func NewSignUpService(db mysql.SignUp) signupService {
 }
 
 func (s *signupService) signUpBasicAccount(req api.UserSignReq) error {
-	fmt.Println("signUpBasicAccount")
+	log.Println("signUpBasicAccount")
 
 	hashedPassword := hashPassword(req.Password)
 	return s.db.SignUpBasicAccount(req.Email, hashedPassword)
@@ -35,7 +36,7 @@ func (s *signupService) signUpBasicAccount(req api.UserSignReq) error {
 
 // TODO : extract with signin
 func (s *signupService) generateSessionToken(id int64) (string, error) {
-	fmt.Println("generateSessionToken")
+	log.Println("generateSessionToken")
 
 	token := make([]byte, 128)
 	_, err := rand.Read(token)
@@ -57,17 +58,17 @@ func (s *signupService) createAuthToken(id int64, tokenString string) (string, e
 }
 
 func (s *signupService) signUpGoogleAccount(email string) error {
-	fmt.Println("SignUpGoogleAccount")
+	log.Println("SignUpGoogleAccount")
 	return s.db.SignUpGoogleAccount(email)
 }
 func (s *signupService) accountAlreadyExists(email string) (bool, error) {
-	fmt.Println("AccountAlreadyExists")
+	log.Println("AccountAlreadyExists")
 
 	return s.db.AccountAlreadyExists(email)
 }
 
 func (s *signupService) getProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*api.Account, error) {
-	fmt.Println("GetProfileInfoByEmailAndAccountType")
+	log.Println("GetProfileInfoByEmailAndAccountType")
 	return s.db.GetProfileInfoByEmailAndAccountType(email, accountType)
 }
 
@@ -81,7 +82,7 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 		if err != nil {
 			return
 		}
-		fmt.Println(req)
+		log.Println(req)
 
 		var account *api.Account
 
@@ -146,7 +147,7 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 		if err != nil {
 			return
 		}
-		fmt.Println(req)
+		log.Println(req)
 
 		alreadyExists, err := service.accountAlreadyExists(req.Email)
 		if err != nil {

@@ -2,8 +2,8 @@
 "port":":80",
   "expiration_date_in_min": 15,
   "mysql": {
-    "address": "127.0.0.1:3306",
+    "address": "ls-0089e4c0fd1f7b7c6a4a1a280f39742f72df889f.ccx1tpf9xkbs.us-east-1.rds.amazonaws.com:3306",
     "schema": "auth",
-    "username": "root"
+    "username": "dbmasteruser"
   }
 }

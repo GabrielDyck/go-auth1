@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -15,7 +15,7 @@ func HealthCheck(router *mux.Router) {
 		writer.WriteHeader(http.StatusOK)
 		_,err:= writer.Write([]byte("OK"))
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 	}).Methods("GET")
 }

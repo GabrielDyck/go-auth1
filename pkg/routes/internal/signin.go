@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -62,7 +63,7 @@ func SignIn(router *mux.Router, service signInService) {
 			if err != nil {
 				return
 			}
-			fmt.Println(req)
+			log.Println(req)
 
 			var account *api.Account
 			switch req.AccountType {

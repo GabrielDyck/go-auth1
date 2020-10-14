@@ -4,8 +4,8 @@ import (
 	"auth1/api"
 	"auth1/pkg/mysql"
 	"errors"
-	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -39,7 +39,7 @@ func ResetPassword(router *mux.Router, db mysql.ResetPassword) {
 		if err != nil {
 			return
 		}
-		fmt.Println(token)
+		log.Println(token)
 
 		forgotPasswordToken, err := resetPasswordService.db.GetForgotPasswordTokenByToken(token)
 		if err != nil {

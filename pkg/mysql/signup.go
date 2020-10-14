@@ -3,6 +3,7 @@ package mysql
 import (
 	"auth1/api"
 	"fmt"
+	"log"
 )
 
 type SignUp interface {
@@ -25,14 +26,14 @@ func (c *client) SignUpBasicAccount(email, password string) error {
 	}
 	defer stmt.Close()
 
-	fmt.Println(stmt)
+	log.Println(stmt)
 	result, err := stmt.Exec(email, password)
 
 	if err != nil {
 		return err
 	}
 	id, _ := result.LastInsertId()
-	fmt.Println(fmt.Sprintf("Created account: %s , type: BASIC, id: %d", email, id))
+	log.Println(fmt.Sprintf("Created account: %s , type: BASIC, id: %d", email, id))
 	return nil
 }
 
@@ -52,7 +53,7 @@ func (c *client) SignUpGoogleAccount(email string) error {
 		return err
 	}
 	id, _ := result.LastInsertId()
-	fmt.Println(fmt.Sprintf("Created account: %s , type: GOOGLE, id: %d", email, id))
+	log.Println(fmt.Sprintf("Created account: %s , type: GOOGLE, id: %d", email, id))
 	return nil
 }
 

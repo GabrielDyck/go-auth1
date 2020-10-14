@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -36,7 +37,7 @@ func ForgotPassword(router *mux.Router, db mysql.ForgotPassword, expirationDateI
 		if err!=nil {
 			return
 		}
-		fmt.Println(req)
+		log.Println(req)
 
 		account, err :=service.db.GetProfileInfoByEmailAndAccountType(req.Email,api.Basic)
 		if err != nil {

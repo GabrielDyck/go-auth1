@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -21,7 +22,7 @@ func builtResponse(response interface{}, statusCode int)([]byte ,int) {
 		data, err=json.Marshal(response)
 
 		if err != nil {
-			fmt.Println(fmt.Sprintf("error occurred trying to marshal error response: %v",err))
+			log.Println(fmt.Sprintf("error occurred trying to marshal error response: %v",err))
 		}
 		return data, http.StatusInternalServerError
 	}
@@ -56,7 +57,7 @@ func wrapResponse(writer http.ResponseWriter,data []byte, httpStatus int) {
 	writer.WriteHeader(httpStatus)
 	_,err := writer.Write(data)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
 

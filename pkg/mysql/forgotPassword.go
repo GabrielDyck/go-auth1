@@ -3,6 +3,7 @@ package mysql
 import (
 	"auth1/api"
 	"fmt"
+	"log"
 )
 
 type ForgotPassword interface {
@@ -26,6 +27,6 @@ func (c *client) CreateForgotPasswordToken(id int64, expirationDateInMin int,tok
 		return err
 	}
 	_, _ = result.LastInsertId()
-	fmt.Println(fmt.Sprintf("Created forgotPasswordToken, accountID: %d", id))
+	log.Println(fmt.Sprintf("Created forgotPasswordToken, accountID: %d", id))
 	return nil
 }

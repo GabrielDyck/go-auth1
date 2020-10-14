@@ -26,14 +26,21 @@ Run 'scripts/sql/script.sql' in mysql database.
 ## Build Docker Image
 
 `
-docker build . -t auth1
+docker build . -t gabrieldyck/auth1:latest
+`
+
+Publish
+`
+docker build . -t gabrieldyck/auth1:latest
+
+docker push gabrieldyck/auth1:latest
 `
 
 
 ## Run Container from Docker Image
 
 `
-sudo docker run  --name auth1 --network host -d  -e MYSQL_PASS=${MYSQL_PASS}  -e SMTP_PASS=${{SMTP_PASS}} auth1
+sudo docker run  --name auth1 --network host -d  -e MYSQL_PASS=${MYSQL_PASS}  -e SMTP_PASS=${{SMTP_PASS}} gabrieldyck/auth1:latest
 
 `
 

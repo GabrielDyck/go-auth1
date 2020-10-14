@@ -5,8 +5,8 @@ import (
 	"auth1/pkg/config"
 	"auth1/pkg/mail"
 	"auth1/pkg/routes"
-	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -26,7 +26,7 @@ func main() {
 
 	err := http.ListenAndServe(configuration.Port, nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 }

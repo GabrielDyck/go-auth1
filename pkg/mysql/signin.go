@@ -3,6 +3,7 @@ package mysql
 import (
 	"auth1/api"
 	"fmt"
+	"log"
 )
 
 type SignIn interface {
@@ -49,6 +50,6 @@ func (c *client) CreateAuthorizationToken(id int64, token string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(fmt.Sprintf("Created session token for accountId: %s , token: %s", id, token))
+	log.Println(fmt.Sprintf("Created session token for accountId: %s , token: %s", id, token))
 	return nil
 }

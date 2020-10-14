@@ -4,8 +4,8 @@ import (
 	"auth1/api"
 	"auth1/pkg/mysql"
 	"errors"
-	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -40,7 +40,7 @@ func GetProfileInfo(router *mux.Router, db mysql.Account) {
 			WrapBadRequestResponse(writer, err)
 			return
 		}
-		fmt.Println(id)
+		log.Println(id)
 
 		account, err := service.getProfileInfo(int64(id))
 		if err != nil {
@@ -66,8 +66,8 @@ func EditProfileInfo(router *mux.Router, service profileInfoService) {
 		if err != nil {
 			return
 		}
-		fmt.Println(id)
-		fmt.Println(req)
+		log.Println(id)
+		log.Println(req)
 
 		err = validateRequiredFields(req)
 		if err != nil {
