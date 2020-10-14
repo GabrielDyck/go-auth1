@@ -15,9 +15,36 @@ export SMTP_PASS=${{SMTP_PASS}}
 Run 'scripts/sql/script.sql' in mysql database.
 
 ## Front Routes
-	http://localhost:8080/signin
-	http://localhost:8080/signup
-	http://localhost:8080/edit-profile
-	http://localhost:8080/profile-info/{id}
-	http://localhost:8080/forgot-password
-	http://localhost:8080/reset-password
+	http://localhost:80/signin
+	http://localhost:80/signup
+	http://localhost:80/edit-profile
+	http://localhost:80/profile-info/{id}
+	http://localhost:80/forgot-password
+	http://localhost:80/reset-password
+	
+	
+## Build Docker Image
+
+`
+docker build . -t auth1
+`
+
+
+## Run Container from Docker Image
+
+`
+sudo docker run  --name auth1 --network host -d  -e MYSQL_PASS=${MYSQL_PASS}  -e SMTP_PASS=${{SMTP_PASS}} auth1
+
+`
+
+## Stop and Delete running container
+
+`
+docker container stop auth1 && docker rm auth1
+`
+
+
+## Log access
+`
+docker logs -f auth1
+`
