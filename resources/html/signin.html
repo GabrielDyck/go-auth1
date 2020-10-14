@@ -25,7 +25,7 @@
                     document.cookie = "Authorization=" + res.getResponseHeader("Authorization");
                     respBody= JSON.parse(res.responseText)
 
-                    window.location.replace("http://localhost:80/profile-info/"+respBody.id);
+                    window.location.replace("/profile-info/"+respBody.id);
 
                     },
                 error: function (response) {
