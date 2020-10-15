@@ -46,8 +46,8 @@ func (s *profileInfoService) GetProfileInfo(router *mux.Router) {
 			WrapBadRequestResponse(writer, err)
 			return
 		}
-		data, httpStatus := builtResponse(account, http.StatusOK)
-		wrapResponse(writer, data, httpStatus)
+		data, httpStatus := BuiltResponse(account, http.StatusOK)
+		WrapResponse(writer, data, httpStatus)
 	}).Methods("GET")
 
 }
@@ -61,7 +61,7 @@ func (s *profileInfoService) EditProfileInfo(router *mux.Router) {
 		}
 
 		var req ProfileReq
-		err = parseRequest(writer, request, &req)
+		err = ParseRequest(writer, request, &req)
 		if err != nil {
 			return
 		}
@@ -78,8 +78,8 @@ func (s *profileInfoService) EditProfileInfo(router *mux.Router) {
 			WrapBadRequestResponse(writer, err)
 			return
 		}
-		data, httpStatus := builtResponse(account, http.StatusOK)
-		wrapResponse(writer, data, httpStatus)
+		data, httpStatus := BuiltResponse(account, http.StatusOK)
+		WrapResponse(writer, data, httpStatus)
 
 	}).Methods("POST")
 

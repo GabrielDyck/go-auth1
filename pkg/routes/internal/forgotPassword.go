@@ -33,7 +33,7 @@ func ForgotPassword(router *mux.Router, db mysql.ForgotPassword, expirationDateI
 	router.HandleFunc(forgotPasswordPath, func(writer http.ResponseWriter, request *http.Request) {
 
 		var req api.ForgotPasswordReq
-		err := parseRequest(writer, request,&req)
+		err := ParseRequest(writer, request,&req)
 		if err!=nil {
 			return
 		}

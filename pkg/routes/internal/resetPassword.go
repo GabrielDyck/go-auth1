@@ -35,7 +35,7 @@ func ResetPassword(router *mux.Router, db mysql.ResetPassword) {
 		token := request.Header.Get("Forgot-Token")
 
 		var req api.ResetPasswordReq
-		err := parseRequest(writer, request, &req)
+		err := ParseRequest(writer, request, &req)
 		if err != nil {
 			return
 		}
@@ -65,7 +65,7 @@ func ResetPassword(router *mux.Router, db mysql.ResetPassword) {
 			return
 		}
 
-		err = resetPasswordService.db.ChangePassword(account.ID, hashPassword(req.Password))
+		err = resetPasswordService.db.ChangePassword(account.ID, HashPassword(req.Password))
 		if err != nil {
 			WrapInternalErrorResponse(writer, err)
 			return

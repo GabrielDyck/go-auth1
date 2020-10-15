@@ -6,6 +6,8 @@ import (
 	"auth1/pkg/mysql"
 	"auth1/pkg/routes/front"
 	"auth1/pkg/routes/internal"
+	"auth1/pkg/routes/internal/singin"
+	"auth1/pkg/routes/internal/singup"
 	"errors"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -32,10 +34,10 @@ func (c *CustomRouter) AddBackendRoutes(backendRouter *mux.Router, expirationDat
 	backendRouter.Use(c.commonMiddleware)
 
 	internal.HealthCheck(backendRouter)
-	signInService := internal.NewSignInService(c.client)
+	signInService := singin.NewSignInService(c.client)
 
-	internal.SignIn(backendRouter, signInService)
-	internal.SignUp(backendRouter, c.client)
+	singin.SignIn(backendRouter, signInService)
+	singup.SignUp(backendRouter, c.client)
 	internal.Logout(backendRouter)
 	internal.ForgotPassword(backendRouter,c.client,expirationDateInMin, emailSender)
 	internal.ResetPassword(backendRouter,c.client)

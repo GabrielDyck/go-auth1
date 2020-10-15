@@ -14,7 +14,7 @@ import (
 
 
 
-func builtResponse(response interface{}, statusCode int)([]byte ,int) {
+func BuiltResponse(response interface{}, statusCode int)([]byte ,int) {
 
 	data , err :=json.Marshal(response)
 
@@ -37,7 +37,7 @@ func builtErrorBodyMsg(err error) api.ErrorMSG {
 
 
 
-func parseRequest(writer http.ResponseWriter, request *http.Request, bodyStruct interface {}) error {
+func ParseRequest(writer http.ResponseWriter, request *http.Request, bodyStruct interface {}) error {
 	body, err := ioutil.ReadAll(request.Body)
 
 	if err != nil {
@@ -53,7 +53,7 @@ func parseRequest(writer http.ResponseWriter, request *http.Request, bodyStruct 
 	return err
 }
 
-func wrapResponse(writer http.ResponseWriter,data []byte, httpStatus int) {
+func WrapResponse(writer http.ResponseWriter,data []byte, httpStatus int) {
 	writer.WriteHeader(httpStatus)
 	_,err := writer.Write(data)
 	if err != nil {
@@ -63,31 +63,31 @@ func wrapResponse(writer http.ResponseWriter,data []byte, httpStatus int) {
 
 
 func WrapInternalErrorResponse(writer http.ResponseWriter, err error) {
-	data, httpStatus := builtResponse(builtErrorBodyMsg(err), http.StatusInternalServerError)
-	wrapResponse(writer,data,httpStatus)
+	data, httpStatus := BuiltResponse(builtErrorBodyMsg(err), http.StatusInternalServerError)
+	WrapResponse(writer,data,httpStatus)
 
 }
 
 func WrapBadRequestResponse(writer http.ResponseWriter, err error) {
-	data, httpStatus := builtResponse(builtErrorBodyMsg(err), http.StatusBadRequest)
-	wrapResponse(writer,data,httpStatus)
+	data, httpStatus := BuiltResponse(builtErrorBodyMsg(err), http.StatusBadRequest)
+	WrapResponse(writer,data,httpStatus)
 
 }
 
 func WrapNotAllowedRequestResponse(writer http.ResponseWriter, err error) {
-	data, httpStatus := builtResponse(builtErrorBodyMsg(err), http.StatusMethodNotAllowed)
-	wrapResponse(writer,data,httpStatus)
+	data, httpStatus := BuiltResponse(builtErrorBodyMsg(err), http.StatusMethodNotAllowed)
+	WrapResponse(writer,data,httpStatus)
 
 }
 
 
 
 func WrapOkEmptyResponse(writer http.ResponseWriter) {
-	wrapResponse(writer,[]byte("{}"),http.StatusOK)
+	WrapResponse(writer,[]byte("{}"),http.StatusOK)
 }
 
 
-func hashPassword(pass string) string {
+func HashPassword(pass string) string {
 	hasher := sha256.New()
 	hasher.Write([]byte(pass))
 	encrypterPassword := base64.URLEncoding.EncodeToString(hasher.Sum(nil))

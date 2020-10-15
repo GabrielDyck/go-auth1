@@ -22,6 +22,8 @@
                 data: JSON.stringify(data),
                 success: function (data, status, res) {
                     alert("Sign Up Successfully")
+                    respBody= JSON.parse(res.responseText)
+                    window.location.replace("/edit-profile/"+respBody.id);
                 },
                 error: function (response) {
                     alert("Sign Up Error "+ JSON.parse(response.responseText).reason);
