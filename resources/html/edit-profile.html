@@ -1,6 +1,104 @@
 <html>
 
-<head></head>
+<head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <script>
+
+        function goToMainProfile(id ){
+            window.location.replace("/profile-info/" + id)
+        }
+
+        function onClickCancel(){
+            id = window.location.pathname.split("/").pop()
+
+            goToMainProfile(id)
+        }
+
+
+        function onClickSaveAndContinue() {
+            id = window.location.pathname.split("/").pop()
+            data = {
+                fullname: document.getElementById("fullname").value,
+                address: document.getElementById("address").value,
+                phone: document.getElementById("phone").value,
+                email: document.getElementById("email").value,
+            }
+            console.log(data)
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                headers: {"Authorization":getCookie("Authorization")},
+                url: "/auth/edit-profile/"+id,
+                data: JSON.stringify(data),
+                success: function (data, status, res) {
+                    alert("Edit Profile Request Successfully.")
+                    goToMainProfile(id)
+
+                },
+                error: function (response) {
+                    alert("Edit Profile Request Error: "+ JSON.parse(response.responseText).reason);
+                }
+            })
+        }
+
+        function getCookie(name) {
+            // Split cookie string and get all individual name=value pairs in an array
+            var cookieArr = document.cookie.split(";");
+
+            // Loop through the array elements
+            for(var i = 0; i < cookieArr.length; i++) {
+                var cookiePair = cookieArr[i].split("=");
+
+                /* Removing whitespace at the beginning of the cookie name
+                and compare it with the given string */
+                if(name == cookiePair[0].trim()) {
+                    // Decode the cookie value and return
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+
+            // Return null if not found
+            return null;
+        }
+        function init() {
+            profileId = window.location.pathname.split("/").pop()
+
+            console.log(profileId)
+            $.ajax({
+                type: "GET",
+                contentType: "application/json",
+                headers: {"Authorization":getCookie("Authorization")},
+                url: "/auth/profile-info/" + profileId,
+                success: function (data, status, res) {
+                    alert("Get Profile Info Successfully")
+
+                    respBody = JSON.parse(res.responseText)
+
+                    document.getElementById("fullname").value = respBody.fullname
+                    document.getElementById("email").value = respBody.email
+                    document.getElementById("address").value = respBody.address
+                    document.getElementById("phone").value = respBody.phone
+
+                    if (respBody.account_type !== "BASIC"){
+                        document.getElementById("email").disabled=true
+                    }
+
+                },
+
+                error: function (response) {
+                    alert("Get Profile Info Error " + JSON.parse(response.responseText).reason);
+                    window.location.replace("/signin")
+                }
+            })
+
+        }
+
+        init()
+
+    </script>
+</head>
 <body>
 
 <h1>Edit Profile</h1>
@@ -28,12 +126,12 @@
 
 
 <div>
-    <button name="saveAndContinue">
+    <button name="saveAndContinue" onclick="onClickSaveAndContinue()">
         Save & Continue
     </button>
 
 
-    <button name="cancel">
+    <button name="cancel" onclick="onClickCancel()">
         Cancel
     </button>
 

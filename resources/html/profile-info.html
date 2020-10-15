@@ -9,7 +9,9 @@
         }
 
         function onClickEdit() {
+            id = window.location.pathname.split("/").pop()
 
+            window.location.replace("/edit-profile/"+id)
         }
         function getCookie(name) {
             // Split cookie string and get all individual name=value pairs in an array
@@ -49,6 +51,8 @@
                     document.getElementById("email").innerHTML = respBody.email
                     document.getElementById("address").innerHTML = respBody.address
                     document.getElementById("phone").innerHTML = respBody.phone
+
+
                 },
 
                 error: function (response) {
@@ -67,12 +71,12 @@
 <h1>Profile</h1>
 
 <div>
-    <button name="saveAndContinue">
+    <button name="logout">
         Logout
     </button>
 
 
-    <button name="cancel">
+    <button name="edit" onclick="onClickEdit()">
         Edit
     </button>
 

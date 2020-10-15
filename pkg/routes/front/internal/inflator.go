@@ -14,6 +14,7 @@ type TemplateInflator struct {
 	profileInfoTemplate    []byte
 	forgotPasswordTemplate []byte
 	resetPasswordTemplate  []byte
+
 }
 
 func NewTemplateInflator() TemplateInflator {
