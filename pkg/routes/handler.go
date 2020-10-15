@@ -36,7 +36,6 @@ func (c *CustomRouter) AddBackendRoutes(backendRouter *mux.Router, expirationDat
 
 	internal.SignIn(backendRouter, signInService)
 	internal.SignUp(backendRouter, c.client)
-	internal.GetProfileInfo(backendRouter, c.client)
 	internal.Logout(backendRouter)
 	internal.ForgotPassword(backendRouter,c.client,expirationDateInMin, emailSender)
 	internal.ResetPassword(backendRouter,c.client)
@@ -46,7 +45,8 @@ func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {
 	router.Use(c.commonMiddleware)
 	router.Use(c.secureMiddleware)
 	profileService := internal.NewProfileInfoService(c.client)
-	internal.EditProfileInfo(router, profileService )
+	profileService.GetProfileInfo(router)
+	profileService.EditProfileInfo(router)
 	internal.Logout(router)
 
 
@@ -63,7 +63,7 @@ func (c *CustomRouter)commonMiddleware(next http.Handler) http.Handler {
 func (c *CustomRouter) secureMiddleware(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := w.Header().Get("AUTHORIZATION")
+		token := r.Header.Get("Authorization")
 		authenticated, err := c.client.IsAuthenticated(token)
 
 		if err !=nil{

@@ -3,8 +3,6 @@ package front
 import (
 	"auth1/pkg/mysql"
 	"auth1/pkg/routes/front/internal"
-	routesInternal "auth1/pkg/routes/internal"
-	"errors"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -29,26 +27,6 @@ func (c *FrontRouter) AddRoutes(router *mux.Router) {
 func (c *FrontRouter)commonMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/html")
-		next.ServeHTTP(w, r)
-	})
-}
-
-func (c *FrontRouter) secureMiddleware(next http.Handler) http.Handler {
-
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := w.Header().Get("AUTHORIZATION")
-		authenticated, err := c.db.IsAuthenticated(token)
-
-		if err !=nil{
-			routesInternal .WrapInternalErrorResponse(w,err)
-			return
-		}
-
-		if !authenticated{
-			routesInternal .WrapBadRequestResponse(w,errors.New("not Authenticated"))
-			return
-		}
-
 		next.ServeHTTP(w, r)
 	})
 }

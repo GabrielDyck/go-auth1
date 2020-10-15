@@ -31,9 +31,8 @@ func NewProfileInfoService(db mysql.Account) profileInfoService {
 	return profileInfoService{db: db}
 }
 
-func GetProfileInfo(router *mux.Router, db mysql.Account) {
+func (s *profileInfoService) GetProfileInfo(router *mux.Router) {
 
-	service := NewProfileInfoService(db)
 	router.HandleFunc(profilePath, func(writer http.ResponseWriter, request *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
@@ -42,7 +41,7 @@ func GetProfileInfo(router *mux.Router, db mysql.Account) {
 		}
 		log.Println(id)
 
-		account, err := service.getProfileInfo(int64(id))
+		account, err := s.getProfileInfo(int64(id))
 		if err != nil {
 			WrapBadRequestResponse(writer, err)
 			return
@@ -53,7 +52,7 @@ func GetProfileInfo(router *mux.Router, db mysql.Account) {
 
 }
 
-func EditProfileInfo(router *mux.Router, service profileInfoService) {
+func (s *profileInfoService) EditProfileInfo(router *mux.Router) {
 	router.HandleFunc(editProfilePath, func(writer http.ResponseWriter, request *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
@@ -74,7 +73,7 @@ func EditProfileInfo(router *mux.Router, service profileInfoService) {
 			WrapBadRequestResponse(writer, err)
 			return
 		}
-		account, err := service.getProfileInfo(int64(id))
+		account, err := s.getProfileInfo(int64(id))
 		if err != nil {
 			WrapBadRequestResponse(writer, err)
 			return

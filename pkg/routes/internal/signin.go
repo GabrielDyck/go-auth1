@@ -37,7 +37,7 @@ func (s *signInService) getAccountByEmailAndAccountType(email string, accountTyp
 }
 
 func (s *signInService) generateSessionToken(id int64) (string, error) {
-	token := make([]byte, 255)
+	token := make([]byte, 128)
 	_, err := rand.Read(token)
 	if err != nil {
 		return "", err
@@ -113,7 +113,11 @@ func SignIn(router *mux.Router, service signInService) {
 
 			}
 			token, err := service.generateSessionToken(account.ID)
-			writer.Header().Set("AUTHORIZATION", token)
+			if err != nil {
+				WrapInternalErrorResponse(writer, err)
+				return
+			}
+			writer.Header().Set("Authorization", token)
 			data, httpStatus := builtResponse(account, http.StatusOK)
 			wrapResponse(writer, data, httpStatus)
 
