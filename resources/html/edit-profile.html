@@ -39,6 +39,12 @@
                 },
                 error: function (response) {
                     alert("Edit Profile Request Error: "+ JSON.parse(response.responseText).reason);
+
+                    if (response.status === 405){
+                        alert("You are not allowed to see this page:");
+                        window.location.replace("/signin")
+
+                    }
                 }
             })
         }

@@ -57,7 +57,11 @@
 
                 error: function (response) {
                     alert("Get Profile Info Error " + JSON.parse(response.responseText).reason);
-                    window.location.replace("/signin")
+                    if (response.status === 405){
+                        alert("You are not allowed to see this page:");
+                        window.location.replace("/signin")
+
+                    }
                 }
             })
 
