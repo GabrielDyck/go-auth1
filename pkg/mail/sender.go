@@ -15,10 +15,12 @@ type Sender struct {
 }
 
 func NewSender() Sender {
+
+	domain:= os.Getenv("DOMAIN")
 	return Sender{
 		fromEmail: "gabrielapptester@gmail.com",
 		password : os.Getenv("SMTP_PASS"),
-		msg: "Subject: Auth1 Reset Password\n\n" + "Click here to reset your password http://www.mu-invictus.com/reset-password?token=%s",
+		msg: "Subject: Auth1 Reset Password\n\n" + "Click here to reset your password http://" + domain +"/reset-password?token=%s",
 	}
 }
 

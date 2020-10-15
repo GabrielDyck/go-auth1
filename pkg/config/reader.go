@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 )
 
 type mysql struct {
@@ -21,7 +22,15 @@ type Configuration struct {
 func Read() Configuration {
 	var configuration Configuration
 
-	data, err := ioutil.ReadFile("./pkg/config/resources/application.json")
+	environment:= os.Getenv("ENVIRONMENT")
+
+	var data []byte
+	var err error
+	if  environment == "local"{
+		data, err = ioutil.ReadFile("./pkg/config/resources/application.json")
+	}else {
+		data, err = ioutil.ReadFile("/home/ubuntu/resources/application.json")
+	}
 
 	if err != nil {
 		panic(fmt.Sprintf("couldn't read configuration: %v", err))

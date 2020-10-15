@@ -7,9 +7,15 @@ Set MYSQL_PASS environment value to establish connection to mysql.
 
 Set SMTP_PASS environment value to send emails.
 
+Set DOMAIN environment value for reset link.
+
+Set ENVIRONMENT environment value to inform where the application is running.
 `
 export MYSQL_PASS=${{MYSQL_PASS}}
 export SMTP_PASS=${{SMTP_PASS}}
+export DOMAIN=${{DOMAIN}}
+export ENVIRONMENT=${{ENVIRONMENT}}
+
 `
 
 Run 'scripts/sql/script.sql' in mysql database.
