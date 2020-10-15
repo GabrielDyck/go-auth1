@@ -7,15 +7,15 @@ import (
 )
 
 type SignIn interface {
-	IsLoginGranted(email, password string) (bool, error)
+	IsBasicLoginGranted(email, password string) (bool, error)
 	GetProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*api.Account, error)
 	CreateAuthorizationToken(id int64, token string) error
 }
 
 
 
-func (c *client) IsLoginGranted(email, password string) (bool, error) {
-	row, err := c.db.Query("SELECT COUNT(1) FROM ACCOUNTS WHERE ACCOUNT_TYPE !=\"GOOGLE\" AND EMAIL = ? AND PASSWORD= ?;", email, password)
+func (c *client) IsBasicLoginGranted(email, password string) (bool, error) {
+	row, err := c.db.Query("SELECT COUNT(1) FROM ACCOUNTS WHERE ACCOUNT_TYPE =\"BASIC\" AND EMAIL = ? AND PASSWORD= ?;", email, password)
 
 	if err != nil {
 		return false, err

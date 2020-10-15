@@ -21,7 +21,7 @@ func NewSignInService(db mysql.SignIn) signInService {
 func (s *signInService) signIn(email, password string) (bool, error) {
 	encrypterPassword := internal.HashPassword(password)
 
-	return s.db.IsLoginGranted(email, encrypterPassword)
+	return s.db.IsBasicLoginGranted(email, encrypterPassword)
 }
 
 func (s *signInService) getAccountByEmailAndAccountType(email string, accountType api.AccountType) (*api.Account, error) {

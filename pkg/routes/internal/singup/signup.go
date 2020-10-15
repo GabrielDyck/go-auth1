@@ -13,7 +13,7 @@ import (
 
 const (
 	signUpPath               = "/signup"
-	accountAlreadyExistsPath = "/accountAlreadyExistsPath"
+	accountAlreadyExistsPath = "/accountAlreadyExists"
 )
 
 func SignUp(router *mux.Router, client mysql.SignUp) {
@@ -33,14 +33,14 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 		switch req.AccountType {
 
 		case api.Basic:
-			already, err := service.accountAlreadyExists(req.Email)
+			account, err = service.getProfileInfoByEmailAndAccountType(req.Email, api.Basic)
 
 			if err != nil {
 				internal.WrapInternalErrorResponse(writer, err)
 				return
 			}
 
-			if already {
+			if account!=nil {
 				internal.WrapBadRequestResponse(writer, errors.New("user already registered"))
 				return
 			}
@@ -77,11 +77,18 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 					return
 				}
 			}
+
+			account, err = service.getProfileInfoByEmailAndAccountType(tokenInfo.Email, api.Google)
+			if err != nil {
+				internal.WrapInternalErrorResponse(writer, err)
+				return
+			}
 		default:
 			internal.WrapBadRequestResponse(writer, errors.New("unknown account type"))
 			return
 		}
-		internal.WrapOkEmptyResponse(writer)
+		data, httpStatus := internal.BuiltResponse(account, http.StatusOK)
+		internal.WrapResponse(writer, data, httpStatus)
 	}).Methods("POST")
 
 	router.HandleFunc(accountAlreadyExistsPath, func(writer http.ResponseWriter, request *http.Request) {
