@@ -109,7 +109,7 @@ func (s *profileInfoService) EditProfileInfo(router *mux.Router) {
 			}
 
 			if alreadyExist{
-				WrapBadRequestResponse(writer, errors.New("the email "))
+				WrapBadRequestResponse(writer, errors.New("the email is already in user"))
 				return
 			}
 

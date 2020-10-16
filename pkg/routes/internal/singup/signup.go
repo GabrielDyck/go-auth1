@@ -87,6 +87,14 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 			internal.WrapBadRequestResponse(writer, errors.New("unknown account type"))
 			return
 		}
+
+		token, err := service.generateSessionToken(account.ID)
+		if err != nil {
+			internal.WrapInternalErrorResponse(writer, err)
+			return
+		}
+
+		writer.Header().Set("Authorization", token)
 		data, httpStatus := internal.BuiltResponse(account, http.StatusOK)
 		internal.WrapResponse(writer, data, httpStatus)
 	}).Methods("POST")

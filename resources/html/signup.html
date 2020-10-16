@@ -23,7 +23,9 @@
                 success: function (data, status, res) {
                     alert("Sign Up Successfully")
                     respBody= JSON.parse(res.responseText)
-                    window.location.replace("/edit-profile/"+respBody.id);
+                    document.cookie = "Authorization=" + res.getResponseHeader("Authorization");
+                    document.cookie = "User=" + respBody.id;
+                    window.location.replace("/edit-profile");
                 },
                 error: function (response) {
                     alert("Sign Up Error "+ JSON.parse(response.responseText).reason);
