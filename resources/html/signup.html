@@ -8,13 +8,12 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
     <script>
-        var clicked=false;//Global Variable
-        function ClickLogin()
-        {
-            clicked=true;
+        var clicked = false;//Global Variable
+        function ClickLogin() {
+            clicked = true;
         }
 
-        function callSignUp(data){
+        function callSignUp(data, callback) {
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
@@ -22,26 +21,29 @@
                 data: JSON.stringify(data),
                 success: function (data, status, res) {
                     alert("Sign Up Successfully")
-                    respBody= JSON.parse(res.responseText)
-                    document.cookie = "Authorization=" + res.getResponseHeader("Authorization");
-                    document.cookie = "User=" + respBody.id;
-                    window.location.replace("/edit-profile");
+                    callback(res)
                 },
                 error: function (response) {
-                    alert("Sign Up Error "+ JSON.parse(response.responseText).reason);
+                    alert("Sign Up Error " + JSON.parse(response.responseText).reason);
                 }
             })
         }
 
-        function basicOnSignUp(){
+        function basicOnSignUp() {
 
-            data= {
+            data = {
                 email: document.getElementById("email").value,
-                password:document.getElementById("password").value,
+                password: document.getElementById("password").value,
                 account_type: "BASIC"
             }
-            console.log(data)
-            callSignUp(data)
+
+            function callback(res) {
+                window.location.replace("/signin");
+
+            }
+
+            console.log(data )
+            callSignUp(data,callback)
 
 
         }
@@ -55,7 +57,15 @@
                 }
 
                 console.log(data)
-                callSignUp(data)
+
+                function callback(res) {
+                    respBody = JSON.parse(res.responseText)
+                    document.cookie = "Authorization=" + res.getResponseHeader("Authorization");
+                    document.cookie = "User=" + respBody.id;
+                    window.location.replace("/edit-profile");
+                }
+
+                callSignUp(data, callback)
             }
         };
 
@@ -81,7 +91,7 @@
     </button>
 
 
-    <div class="g-signin2" data-onsuccess="googleOnSignUp" onclick="ClickLogin()" ></div>
+    <div class="g-signin2" data-onsuccess="googleOnSignUp" onclick="ClickLogin()"></div>
 
 </div>
 
