@@ -9,7 +9,7 @@ import (
 type SignUp interface {
 	SignUpBasicAccount(email, password string) error
 	SignUpGoogleAccount(email string) error
-	AccountAlreadyExists(email string) (bool,error)
+	AccountAlreadyExists(email string,accountType api.AccountType) (bool,error)
 	CreateAuthorizationToken(id int64, token string) error
 	GetProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*api.Account, error)
 
@@ -58,8 +58,8 @@ func (c *client) SignUpGoogleAccount(email string) error {
 }
 
 
-func (c *client) AccountAlreadyExists(email string) (bool, error) {
-	row, err := c.db.Query("SELECT COUNT(1) FROM ACCOUNTS WHERE EMAIL = ?;", email)
+func (c *client) AccountAlreadyExists(email string,accountType api.AccountType) (bool, error) {
+	row, err := c.db.Query("SELECT COUNT(1) FROM ACCOUNTS WHERE EMAIL = ? AND ACCOUNT_TYPE = ?;", email,accountType)
 
 	if err != nil {
 		return false, err

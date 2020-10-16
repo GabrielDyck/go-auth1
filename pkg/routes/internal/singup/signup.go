@@ -91,21 +91,4 @@ func SignUp(router *mux.Router, client mysql.SignUp) {
 		internal.WrapResponse(writer, data, httpStatus)
 	}).Methods("POST")
 
-	router.HandleFunc(accountAlreadyExistsPath, func(writer http.ResponseWriter, request *http.Request) {
-
-		var req api.UserSignReq
-		err := internal.ParseRequest(writer, request, &req)
-		if err != nil {
-			return
-		}
-		log.Println(req)
-
-		alreadyExists, err := service.accountAlreadyExists(req.Email)
-		if err != nil {
-			internal.WrapBadRequestResponse(writer, err)
-			return
-		}
-		data, httpStatus := internal.BuiltResponse(alreadyExists, http.StatusOK)
-		internal.WrapResponse(writer, data, httpStatus)
-	}).Methods("POST")
 }

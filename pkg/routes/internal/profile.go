@@ -11,9 +11,8 @@ import (
 )
 
 const (
-	profilePath          = "/profile-info/{id}"
-	editProfilePath          = "/edit-profile/{id}"
-
+	profilePath     = "/profile-info/{id}"
+	editProfilePath = "/edit-profile/{id}"
 )
 
 type ProfileReq struct {
@@ -24,11 +23,15 @@ type ProfileReq struct {
 }
 
 type profileInfoService struct {
-	db mysql.Account
+	db          mysql.Account
+	authService AuthService
 }
 
-func NewProfileInfoService(db mysql.Account) profileInfoService {
-	return profileInfoService{db: db}
+func NewProfileInfoService(db mysql.Account, authService AuthService) profileInfoService {
+	return profileInfoService{
+		db:          db,
+		authService: authService,
+	}
 }
 
 func (s *profileInfoService) GetProfileInfo(router *mux.Router) {
@@ -60,6 +63,20 @@ func (s *profileInfoService) EditProfileInfo(router *mux.Router) {
 			return
 		}
 
+		token:= request.Header.Get("Authorization")
+
+		isAuthorized,err:= s.authService.IsProfileAuthorized(int64(id),token)
+
+		if err!= nil{
+			WrapInternalErrorResponse(writer,err)
+			return
+		}
+
+		if !isAuthorized{
+			WrapBadRequestResponse(writer,errors.New("you are not authorized to edit a profile that is not belonging to you"))
+			return
+		}
+
 		var req ProfileReq
 		err = ParseRequest(writer, request, &req)
 		if err != nil {
@@ -68,17 +85,43 @@ func (s *profileInfoService) EditProfileInfo(router *mux.Router) {
 		log.Println(id)
 		log.Println(req)
 
-		err = validateRequiredFields(req)
-		if err != nil {
-			WrapBadRequestResponse(writer, err)
-			return
-		}
 		account, err := s.getProfileInfo(int64(id))
 		if err != nil {
+			WrapInternalErrorResponse(writer, err)
+			return
+		}
+		if account == nil{
 			WrapBadRequestResponse(writer, err)
 			return
 		}
-		data, httpStatus := BuiltResponse(account, http.StatusOK)
+
+		if req.Email != account.Email {
+
+			if account.AccountType == api.Google{
+				WrapBadRequestResponse(writer, errors.New("cannot edit email of an Google Account"))
+				return
+			}
+
+			alreadyExist, err:= s.db.AccountAlreadyExists(req.Email, account.AccountType)
+			if err != nil {
+				WrapInternalErrorResponse(writer, err)
+				return
+			}
+
+			if alreadyExist{
+				WrapBadRequestResponse(writer, errors.New("the email "))
+				return
+			}
+
+		}
+
+		err= s.db.EditProfileInfo(int64(id),req.Email,req.Address,req.Fullname,req.Phone)
+		if err != nil {
+			WrapInternalErrorResponse(writer, err)
+			return
+		}
+
+		data, httpStatus := BuiltResponse(req, http.StatusOK)
 		WrapResponse(writer, data, httpStatus)
 
 	}).Methods("POST")

@@ -53,10 +53,10 @@ func (s *signupService) signUpGoogleAccount(email string) error {
 	log.Println("SignUpGoogleAccount")
 	return s.db.SignUpGoogleAccount(email)
 }
-func (s *signupService) accountAlreadyExists(email string) (bool, error) {
+func (s *signupService) accountAlreadyExists(email string, accountType api.AccountType) (bool, error) {
 	log.Println("AccountAlreadyExists")
 
-	return s.db.AccountAlreadyExists(email)
+	return s.db.AccountAlreadyExists(email,accountType)
 }
 
 func (s *signupService) getProfileInfoByEmailAndAccountType(email string, accountType api.AccountType) (*api.Account, error) {

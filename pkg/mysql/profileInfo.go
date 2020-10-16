@@ -6,6 +6,8 @@ import (
 
 type Account interface {
 	GetAccountById(id int64) (*api.Account, error)
+	AccountAlreadyExists(email string, accountType api.AccountType) (bool, error)
+	EditProfileInfo(accountId int64,email,address,fullname,phone string) error
 }
 
 
@@ -26,4 +28,14 @@ func (c *client) GetAccountById(id int64) (*api.Account, error) {
 	}
 
 	return &account, nil
+}
+
+
+func (c *client) EditProfileInfo(accountId int64,email,address,fullname,phone string) error {
+	_, err := c.db.Exec("UPDATE ACCOUNTS SET EMAIL= ?, ADDRESS= ?, FULLNAME=?, PHONE=? WHERE ID = ?;",email, address, fullname, phone, accountId)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -16,12 +16,15 @@ import (
 type CustomRouter struct {
 	client mysql.Client
 	configuration config.Configuration
+	authService internal.AuthService
 }
 
 func NewCustomRouter(client mysql.Client, configuration config.Configuration) CustomRouter{
+
 	return CustomRouter{
 		client: client,
 		configuration: configuration,
+		authService: internal.NewAuthService(client),
 	}
 }
 
@@ -46,7 +49,7 @@ func (c *CustomRouter) AddBackendRoutes(backendRouter *mux.Router, expirationDat
 func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {
 	router.Use(c.commonMiddleware)
 	router.Use(c.secureMiddleware)
-	profileService := internal.NewProfileInfoService(c.client)
+	profileService := internal.NewProfileInfoService(c.client, c.authService)
 	profileService.GetProfileInfo(router)
 	profileService.EditProfileInfo(router)
 	internal.Logout(router)
@@ -66,7 +69,7 @@ func (c *CustomRouter) secureMiddleware(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
-		authenticated, err := c.client.IsAuthenticated(token)
+		authenticated, err := c.authService.IsAuthorized(token)
 
 		if err !=nil{
 			internal.WrapInternalErrorResponse(w,err)
