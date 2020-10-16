@@ -10,14 +10,14 @@
         }
 
         function onClickCancel(){
-            id = window.location.pathname.split("/").pop()
+            id = getCookie("User")
 
             goToMainProfile(id)
         }
 
 
         function onClickSaveAndContinue() {
-            id = window.location.pathname.split("/").pop()
+            id = getCookie("User")
             data = {
                 fullname: document.getElementById("fullname").value,
                 address: document.getElementById("address").value,
@@ -69,7 +69,7 @@
             return null;
         }
         function init() {
-            profileId = window.location.pathname.split("/").pop()
+            profileId = getCookie("User")
 
             console.log(profileId)
             $.ajax({

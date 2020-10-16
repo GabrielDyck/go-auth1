@@ -24,6 +24,7 @@
                     alert("Sign In Successfully")
                     document.cookie = "Authorization=" + res.getResponseHeader("Authorization");
                     respBody= JSON.parse(res.responseText)
+                    document.cookie = "User=" + respBody.id;
 
                     window.location.replace("/profile-info/"+respBody.id);
 

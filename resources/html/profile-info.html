@@ -9,9 +9,7 @@
         }
 
         function onClickEdit() {
-            id = window.location.pathname.split("/").pop()
-
-            window.location.replace("/edit-profile/"+id)
+            window.location.replace("/edit-profile")
         }
         function getCookie(name) {
             // Split cookie string and get all individual name=value pairs in an array
@@ -33,8 +31,20 @@
             return null;
         }
 
+
+        function onload(){
+            loggedId = getCookie("User")
+
+            profileId= window.location.pathname.split("/").pop()
+
+            if (loggedId !== profileId){
+                document.getElementById("edit").style.visibility = "hidden"
+
+            }
+        }
         function init() {
-            profileId = window.location.pathname.split("/").pop()
+            profileId= window.location.pathname.split("/").pop()
+
 
             console.log(profileId)
             $.ajax({
@@ -70,7 +80,7 @@
         init()
     </script>
 </head>
-<body>
+<body onload="onload()">
 
 <h1>Profile</h1>
 
@@ -80,7 +90,7 @@
     </button>
 
 
-    <button name="edit" onclick="onClickEdit()">
+    <button name="edit" id="edit" onclick="onClickEdit()">
         Edit
     </button>
 
