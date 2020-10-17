@@ -77,13 +77,22 @@ func (t *TemplateBuilder) inflateEditProfileTemplate(rw http.ResponseWriter, req
 	} else {
 		err := json.Unmarshal(data, &account)
 
-		tmpl := template.Must(template.New("edit-profile.html").Funcs(template.FuncMap{"showIfNotNil": func(value *string) string {
+		tmpl := template.Must(template.New("edit-profile.html").Funcs(
+			template.FuncMap{
+				"showIfNotNil": func(value *string) string {
 
 			if value != nil {
 				return *value
 			}
 			return ""
-		}}).ParseFiles("pkg/routes/front/internal/templates/edit-profile.html"))
+		},
+		"disabled": func(value api.AccountType) string{
+			if value != api.Basic{
+				return "disabled"
+			}
+			return ""
+		},
+			}).ParseFiles("pkg/routes/front/internal/templates/edit-profile.html"))
 		err = tmpl.Execute(rw, account)
 		if err != nil {
 			log.Println(err)

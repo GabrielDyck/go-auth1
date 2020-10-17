@@ -72,7 +72,6 @@
             id = getCookie("User")
 
 
-            console.log(profileId)
             $.ajax({
                 type: "GET",
                 contentType: "application/json",
@@ -114,7 +113,7 @@
 
 <div>
     <label for="email">Email</label>
-    <input id="email" type="text" value="{{  .Email  }}">
+    <input id="email" type="text" value="{{  .Email  }}" {{disabled .AccountType}}>
 </div>
 
 
