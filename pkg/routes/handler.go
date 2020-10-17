@@ -67,7 +67,7 @@ func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {
 	profileService.AddRoutes(router)
 
 	logoutService:= logout.NewLogoutService(c.client)
-	logoutService.Logout(router)
+	logoutService.AddRoutes(router)
 
 	http.Handle("/auth/",router)
 }
