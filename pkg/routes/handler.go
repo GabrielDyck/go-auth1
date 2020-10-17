@@ -6,6 +6,7 @@ import (
 	"auth1/pkg/mysql"
 	"auth1/pkg/routes/front"
 	"auth1/pkg/routes/internal"
+	"auth1/pkg/routes/internal/auth"
 	"auth1/pkg/routes/internal/singin"
 	"auth1/pkg/routes/internal/singup"
 	"errors"
@@ -14,17 +15,17 @@ import (
 )
 
 type CustomRouter struct {
-	client mysql.Client
+	client        mysql.Client
 	configuration config.Configuration
-	authService internal.AuthService
+	authService   auth.AuthService
 }
 
 func NewCustomRouter(client mysql.Client, configuration config.Configuration) CustomRouter{
 
 	return CustomRouter{
-		client: client,
+		client:        client,
 		configuration: configuration,
-		authService: internal.NewAuthService(client),
+		authService:   auth.NewAuthService(client),
 	}
 }
 
@@ -41,6 +42,7 @@ func (c *CustomRouter) AddBackendRoutes(backendRouter *mux.Router, expirationDat
 
 	singin.SignIn(backendRouter, signInService)
 	singup.SignUp(backendRouter, c.client)
+	internal.Authenticated(backendRouter,c.authService)
 
 
 

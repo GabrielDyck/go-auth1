@@ -3,6 +3,7 @@ package internal
 import (
 	"auth1/api"
 	"auth1/pkg/mysql"
+	"auth1/pkg/routes/internal/auth"
 	"errors"
 	"github.com/gorilla/mux"
 	"log"
@@ -24,10 +25,10 @@ type ProfileReq struct {
 
 type profileInfoService struct {
 	db          mysql.Account
-	authService AuthService
+	authService auth.AuthService
 }
 
-func NewProfileInfoService(db mysql.Account, authService AuthService) profileInfoService {
+func NewProfileInfoService(db mysql.Account, authService auth.AuthService) profileInfoService {
 	return profileInfoService{
 		db:          db,
 		authService: authService,
@@ -88,7 +89,7 @@ func (s *profileInfoService) EditProfileInfo(router *mux.Router) {
 			}
 
 			if alreadyExist{
-				WrapBadRequestResponse(writer, errors.New("the email is already in user"))
+				WrapBadRequestResponse(writer, errors.New("the email is already in use"))
 				return
 			}
 
