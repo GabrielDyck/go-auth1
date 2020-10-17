@@ -5,42 +5,27 @@
 
     <script>
 
-        function goToMainProfile(id) {
-            window.location.replace("/profile-info/" + id)
-        }
+        function deleteCookie(name) {
+            document.cookie = name + "=;path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        };
 
-        function onClickCancel() {
-            id = getCookie("User")
-
-            goToMainProfile(id)
-        }
-
-
-        function onClickSaveAndContinue() {
-            id = getCookie("User")
-            data = {
-                fullname: document.getElementById("fullname").value,
-                address: document.getElementById("address").value,
-                phone: document.getElementById("phone").value,
-                email: document.getElementById("email").value,
-            }
-            console.log(data)
-
+        function onClickLogout() {
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                headers: {"Authorization": getCookie("Authorization")},
-                url: "/auth/edit-profile/" + id,
-                data: JSON.stringify(data),
+                headers: {"Authorization":getCookie("Authorization")},
+                url: "/auth/logout",
                 success: function (data, status, res) {
-                    alert("Edit Profile Request Successfully.")
-                    goToMainProfile(id)
+                    alert("Logout Successfully")
+                    deleteCookie("User")
+                    deleteCookie("Authorization")
+                    window.location.replace("/signin")
 
                 },
-                error: function (response) {
-                    alert("Edit Profile Request Error: " + JSON.parse(response.responseText).reason);
 
-                    if (response.status === 405) {
+                error: function (response) {
+                    alert("Logout Error ");
+                    if (response.status === 405){
                         alert("You are not allowed to see this page:");
                         window.location.replace("/signin")
 
@@ -49,17 +34,20 @@
             })
         }
 
+        function onClickEdit() {
+            window.location.replace("/edit-profile")
+        }
         function getCookie(name) {
             // Split cookie string and get all individual name=value pairs in an array
             var cookieArr = document.cookie.split(";");
 
             // Loop through the array elements
-            for (var i = 0; i < cookieArr.length; i++) {
+            for(var i = 0; i < cookieArr.length; i++) {
                 var cookiePair = cookieArr[i].split("=");
 
                 /* Removing whitespace at the beginning of the cookie name
                 and compare it with the given string */
-                if (name == cookiePair[0].trim()) {
+                if(name == cookiePair[0].trim()) {
                     // Decode the cookie value and return
                     return decodeURIComponent(cookiePair[1]);
                 }
@@ -68,8 +56,21 @@
             // Return null if not found
             return null;
         }
+
+
+        function onload(){
+            loggedId = getCookie("User")
+
+            profileId= window.location.pathname.split("/").pop()
+
+            if (loggedId !== profileId){
+                document.getElementById("edit").style.visibility = "hidden"
+
+            }
+        }
+
         function init() {
-            id = getCookie("User")
+            profileId= window.location.pathname.split("/").pop()
 
 
             console.log(profileId)
@@ -77,7 +78,7 @@
                 type: "GET",
                 contentType: "application/json",
                 headers: {"Authorization":getCookie("Authorization")},
-                url: "/auth/profile-info/" + id,
+                url: "/auth/profile-info/" + profileId,
                 error: function (response) {
                     alert("Get Profile Info Error " + JSON.parse(response.responseText).reason);
                     if (response.status === 405){
@@ -92,43 +93,45 @@
         init()
     </script>
 </head>
-<body>
+<body onload="onload()">
 
-<h1>Edit Profile</h1>
+<h1>Profile</h1>
 
 <div>
+    <button name="logout" onclick="onClickLogout()">
+        Logout
+    </button>
+
+
+    <button name="edit" id="edit" onclick="onClickEdit()">
+        Edit
+    </button>
+
+</div>
+<div>
     <label for="fullname">Fullname</label>
-    <input id="fullname" type="text" value="{{ showIfNotNil  .Fullname  }}">
+    <p id="fullname">{{ showIfNotNil  .Fullname  }}</p>
 </div>
 
 <div>
     <label for="address">Address</label>
-    <input id="address" type="text" value="{{ showIfNotNil  .Address  }}">
+    <p id="address">{{ showIfNotNil  .Address  }}</p>
+
 </div>
 
 
 <div>
     <label for="phone">Phone</label>
-    <input id="phone" type="text" value="{{ showIfNotNil  .Phone  }}">
+    <p id="phone">{{ showIfNotNil  .Phone  }}</p>
+
 </div>
 
 <div>
     <label for="email">Email</label>
-    <input id="email" type="text" value="{{  .Email  }}">
-</div>
-
-
-<div>
-    <button name="saveAndContinue" onclick="onClickSaveAndContinue()">
-        Save & Continue
-    </button>
-
-
-    <button name="cancel" onclick="onClickCancel()">
-        Cancel
-    </button>
+    <p id="email">{{  .Email  }}</p>
 
 </div>
+
 
 </body>
 
