@@ -4,6 +4,7 @@ import (
 	"auth1/api"
 	"auth1/pkg/mysql"
 	"auth1/pkg/routes/internal"
+	"context"
 	"errors"
 	"github.com/gorilla/mux"
 	"log"
@@ -18,6 +19,7 @@ const (
 
 type resetPasswordService struct {
 	db mysql.ResetPassword
+
 }
 
 func NewResetPasswordService(db mysql.ResetPassword) resetPasswordService {
@@ -56,16 +58,26 @@ func (r *resetPasswordService) resetPassword(request *http.Request) ([]byte, int
 		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(errors.New("token has expired")), http.StatusInternalServerError)
 	}
 
-	err = r.db.ChangePassword(account.ID, internal.HashPassword(req.Password))
-	if err != nil {
-		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusInternalServerError)
-	}
-	err = r.db.DeleteForgotPasswordToken(token)
+
+	ctx := context.Background()
+	tx, err := r.db.CreateTrx(ctx)
 	if err != nil {
 		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusInternalServerError)
 	}
 
-	return []byte{}, http.StatusOK
+	err = r.db.ChangePassword(tx,ctx,account.ID, internal.HashPassword(req.Password))
+	if err != nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusInternalServerError)
+	}
+	err = r.db.DeleteForgotPasswordToken(tx,ctx,token)
+	if err != nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusInternalServerError)
+	}
+	err = tx.Commit()
+	if err != nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusInternalServerError)
+	}
+	return  []byte("{}"), http.StatusOK
 }
 
 func (r *resetPasswordService) AddRoutes(router *mux.Router) {

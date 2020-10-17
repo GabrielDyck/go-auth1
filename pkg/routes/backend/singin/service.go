@@ -47,7 +47,7 @@ func (s *signInService) signIn(request *http.Request) ([]byte, int, string) {
 		}
 
 		if !isGranted {
-			data, status := internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusBadRequest)
+			data, status := internal.BuiltResponse(internal.BuiltErrorBodyMsg(errors.New("username or password are wrong")), http.StatusBadRequest)
 			return data, status, ""
 		}
 

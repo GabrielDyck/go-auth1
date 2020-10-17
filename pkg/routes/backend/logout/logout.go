@@ -41,7 +41,7 @@ func (l *logoutService) logout(request *http.Request) ([]byte, int) {
 	if !ok {
 		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(errors.New("token isn't available")), http.StatusBadRequest)
 	}
-	return []byte{}, http.StatusOK
+	return  []byte("{}"), http.StatusOK
 
 }
 

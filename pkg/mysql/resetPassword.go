@@ -2,21 +2,25 @@ package mysql
 
 import (
 	"auth1/pkg/mysql/model"
+	"context"
+	"database/sql"
 	"time"
 )
 
 type ResetPassword interface {
-	DeleteForgotPasswordToken(token string) error
+	DeleteForgotPasswordToken(tx *sql.Tx, ctx context.Context,token string) error
 	GetForgotPasswordTokenByToken(token string) (*model.ForgotPasswordToken, error)
-	ChangePassword(accountId int64,newPassword string) error
+	ChangePassword(tx *sql.Tx, ctx context.Context,accountId int64,newPassword string) error
+	CreateTrx(context context.Context)(*sql.Tx, error)
 	Account
 }
 
 
-func (c *client) DeleteForgotPasswordToken(token string) error {
-	_, err := c.db.Exec("DELETE FROM FORGOT_PASSWORD_TOKENS WHERE TOKEN = ?;", token)
+func (c *client) DeleteForgotPasswordToken(tx *sql.Tx, ctx context.Context,token string) error {
+	_, err := tx.ExecContext(ctx,"DELETE FROM FORGOT_PASSWORD_TOKENS WHERE TOKEN = ?;", token)
 
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 	return nil
@@ -52,10 +56,11 @@ func (c *client) GetForgotPasswordTokenByToken(token string) (*model.ForgotPassw
 
 
 
-func (c *client) ChangePassword(accountId int64,newPassword string)error {
-	_, err := c.db.Exec("UPDATE ACCOUNTS SET PASSWORD= ? WHERE ID = ?;",newPassword, accountId)
+func (c *client) ChangePassword(tx *sql.Tx, ctx context.Context,accountId int64,newPassword string)error {
+	_, err := tx.ExecContext(ctx,"UPDATE ACCOUNTS SET PASSWORD= ? WHERE ID = ?;",newPassword, accountId)
 
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 	return nil

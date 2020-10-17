@@ -69,7 +69,7 @@ func (f *forgotPasswordService) forgotPassword(request *http.Request) ([]byte, i
 
 	f.emailSender.SendEmail(req.Email, token)
 
-	return []byte{}, http.StatusOK
+	return []byte("{}"), http.StatusOK
 
 }
 

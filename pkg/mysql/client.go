@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"auth1/api"
+	"context"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -79,7 +80,9 @@ func (c *client) Connect() {
 	c.db = db
 }
 
-
+func (c *client) CreateTrx(context context.Context)(*sql.Tx, error)  {
+	return c.db.BeginTx(context, nil)
+}
 
 
 

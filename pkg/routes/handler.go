@@ -92,7 +92,7 @@ func (c *CustomRouter) secureMiddleware(next http.Handler) http.Handler {
 		if !authenticated {
 			return internal.BuiltResponse(internal.BuiltErrorBodyMsg(errors.New("not Authenticated")), http.StatusMethodNotAllowed)
 		}
-		return []byte{}, 0
+		return  []byte("{}"), 0
 	}
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 
