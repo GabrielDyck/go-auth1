@@ -16,6 +16,7 @@ type Client interface {
 	Account
 	ResetPassword
 	ForgotPassword
+	Logout
 	Connect()
 	//TODO Shutdown()
 }

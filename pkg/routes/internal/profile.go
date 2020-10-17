@@ -34,27 +34,6 @@ func NewProfileInfoService(db mysql.Account, authService AuthService) profileInf
 	}
 }
 
-func (s *profileInfoService) GetProfileInfo(router *mux.Router) {
-
-	router.HandleFunc(profilePath, func(writer http.ResponseWriter, request *http.Request) {
-		id, err := strconv.Atoi(mux.Vars(request)["id"])
-		if err != nil {
-			WrapBadRequestResponse(writer, err)
-			return
-		}
-		log.Println(id)
-
-		account, err := s.getProfileInfo(int64(id))
-		if err != nil {
-			WrapBadRequestResponse(writer, err)
-			return
-		}
-		data, httpStatus := BuiltResponse(account, http.StatusOK)
-		WrapResponse(writer, data, httpStatus)
-	}).Methods("GET")
-
-}
-
 func (s *profileInfoService) EditProfileInfo(router *mux.Router) {
 	router.HandleFunc(editProfilePath, func(writer http.ResponseWriter, request *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(request)["id"])
@@ -125,6 +104,27 @@ func (s *profileInfoService) EditProfileInfo(router *mux.Router) {
 		WrapResponse(writer, data, httpStatus)
 
 	}).Methods("POST")
+
+}
+
+func (s *profileInfoService) GetProfileInfo(router *mux.Router) {
+
+	router.HandleFunc(profilePath, func(writer http.ResponseWriter, request *http.Request) {
+		id, err := strconv.Atoi(mux.Vars(request)["id"])
+		if err != nil {
+			WrapBadRequestResponse(writer, err)
+			return
+		}
+		log.Println(id)
+
+		account, err := s.getProfileInfo(int64(id))
+		if err != nil {
+			WrapBadRequestResponse(writer, err)
+			return
+		}
+		data, httpStatus := BuiltResponse(account, http.StatusOK)
+		WrapResponse(writer, data, httpStatus)
+	}).Methods("GET")
 
 }
 

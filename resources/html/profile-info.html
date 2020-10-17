@@ -4,8 +4,34 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
     <script>
-        function onClickLogout() {
 
+        function deleteCookie(name) {
+            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        };
+
+        function onClickLogout() {
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                headers: {"Authorization":getCookie("Authorization")},
+                url: "/auth/logout",
+                success: function (data, status, res) {
+                    alert("Logout Successfully")
+                    deleteCookie("User")
+                    deleteCookie("Authorization")
+                    window.location.replace("/signin")
+
+                },
+
+                error: function (response) {
+                    alert("Logout Error ");
+                    if (response.status === 405){
+                        alert("You are not allowed to see this page:");
+                        window.location.replace("/signin")
+
+                    }
+                }
+            })
         }
 
         function onClickEdit() {
@@ -85,7 +111,7 @@
 <h1>Profile</h1>
 
 <div>
-    <button name="logout">
+    <button name="logout" onclick="onClickLogout()">
         Logout
     </button>
 
