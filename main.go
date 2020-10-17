@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 	customRouter.AddFrontendRoutes()
 
 
-	err := http.ListenAndServe(configuration.Port, nil)
+	err := http.ListenAndServe(os.Getenv("PORT"), nil)
 	if err != nil {
 		log.Println(err)
 	}

@@ -1,5 +1,4 @@
 {
-"port":":8080",
   "expiration_date_in_min": 15,
   "mysql": {
     "address": "localhost:3306",

@@ -5,11 +5,11 @@
 
     <script>
 
-        function goToMainProfile(id ){
+        function goToMainProfile(id) {
             window.location.replace("/profile-info/" + id)
         }
 
-        function onClickCancel(){
+        function onClickCancel() {
             id = getCookie("User")
 
             goToMainProfile(id)
@@ -29,8 +29,8 @@
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                headers: {"Authorization":getCookie("Authorization")},
-                url: "/auth/edit-profile/"+id,
+                headers: {"Authorization": getCookie("Authorization")},
+                url: "/auth/edit-profile/" + id,
                 data: JSON.stringify(data),
                 success: function (data, status, res) {
                     alert("Edit Profile Request Successfully.")
@@ -38,9 +38,9 @@
 
                 },
                 error: function (response) {
-                    alert("Edit Profile Request Error: "+ JSON.parse(response.responseText).reason);
+                    alert("Edit Profile Request Error: " + JSON.parse(response.responseText).reason);
 
-                    if (response.status === 405){
+                    if (response.status === 405) {
                         alert("You are not allowed to see this page:");
                         window.location.replace("/signin")
 
@@ -54,12 +54,12 @@
             var cookieArr = document.cookie.split(";");
 
             // Loop through the array elements
-            for(var i = 0; i < cookieArr.length; i++) {
+            for (var i = 0; i < cookieArr.length; i++) {
                 var cookiePair = cookieArr[i].split("=");
 
                 /* Removing whitespace at the beginning of the cookie name
                 and compare it with the given string */
-                if(name == cookiePair[0].trim()) {
+                if (name == cookiePair[0].trim()) {
                     // Decode the cookie value and return
                     return decodeURIComponent(cookiePair[1]);
                 }
@@ -68,40 +68,6 @@
             // Return null if not found
             return null;
         }
-        function init() {
-            profileId = getCookie("User")
-
-            console.log(profileId)
-            $.ajax({
-                type: "GET",
-                contentType: "application/json",
-                headers: {"Authorization":getCookie("Authorization")},
-                url: "/auth/profile-info/" + profileId,
-                success: function (data, status, res) {
-                    alert("Get Profile Info Successfully")
-
-                    respBody = JSON.parse(res.responseText)
-
-                    document.getElementById("fullname").value = respBody.fullname
-                    document.getElementById("email").value = respBody.email
-                    document.getElementById("address").value = respBody.address
-                    document.getElementById("phone").value = respBody.phone
-
-                    if (respBody.account_type !== "BASIC"){
-                        document.getElementById("email").disabled=true
-                    }
-
-                },
-
-                error: function (response) {
-                    alert("Get Profile Info Error " + JSON.parse(response.responseText).reason);
-                    window.location.replace("/signin")
-                }
-            })
-
-        }
-
-        init()
 
     </script>
 </head>
@@ -111,23 +77,23 @@
 
 <div>
     <label for="fullname">Fullname</label>
-    <input id="fullname" type="text">
+    <input id="fullname" type="text" value="{{ showIfNotNil  .Fullname  }}">
 </div>
 
 <div>
     <label for="address">Address</label>
-    <input id="address" type="text">
+    <input id="address" type="text" value="{{ showIfNotNil  .Address  }}">
 </div>
 
 
 <div>
     <label for="phone">Phone</label>
-    <input id="phone" type="text">
+    <input id="phone" type="text" value="{{ showIfNotNil  .Phone  }}">
 </div>
 
 <div>
     <label for="email">Email</label>
-    <input id="email" type="text">
+    <input id="email" type="text" value="{{  .Email  }}">
 </div>
 
 
