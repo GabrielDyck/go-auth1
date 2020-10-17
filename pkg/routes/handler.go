@@ -4,11 +4,16 @@ import (
 	"auth1/pkg/config"
 	"auth1/pkg/mail"
 	"auth1/pkg/mysql"
+	"auth1/pkg/routes/backend/auth"
+	"auth1/pkg/routes/backend/forgot"
+	"auth1/pkg/routes/backend/healthcheck"
+	"auth1/pkg/routes/backend/logout"
+	"auth1/pkg/routes/backend/profile"
+	"auth1/pkg/routes/backend/resetpassword"
+	"auth1/pkg/routes/backend/singin"
+	"auth1/pkg/routes/backend/singup"
 	"auth1/pkg/routes/front"
 	"auth1/pkg/routes/internal"
-	"auth1/pkg/routes/internal/auth"
-	"auth1/pkg/routes/internal/singin"
-	"auth1/pkg/routes/internal/singup"
 	"errors"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -37,26 +42,29 @@ func (c *CustomRouter) AddFrontendRoutes() {
 func (c *CustomRouter) AddBackendRoutes(backendRouter *mux.Router, expirationDateInMin int, emailSender mail.Sender) {
 	backendRouter.Use(c.commonMiddleware)
 
-	internal.HealthCheck(backendRouter)
+	healthcheck.HealthCheck(backendRouter)
 	signInService := singin.NewSignInService(c.client)
 
 	singin.SignIn(backendRouter, signInService)
 	singup.SignUp(backendRouter, c.client)
-	internal.Authenticated(backendRouter,c.authService)
+	auth.Authenticated(backendRouter,c.authService)
 
 
 
-	internal.ForgotPassword(backendRouter,c.client,expirationDateInMin, emailSender)
-	internal.ResetPassword(backendRouter,c.client)
+	forgotService:= forgot.NewForgotPasswordService(c.client,expirationDateInMin, emailSender)
+	forgotService.AddRoutes(backendRouter)
+
+	resetpasswordService:= resetpassword.NewResetPasswordService(c.client)
+	resetpasswordService.AddRoutes(backendRouter)
 	http.Handle("/backend/",backendRouter)
 }
 func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {
 	router.Use(c.commonMiddleware)
 	router.Use(c.secureMiddleware)
-	profileService := internal.NewProfileInfoService(c.client, c.authService)
+	profileService := profile.NewProfileInfoService(c.client, c.authService)
 	profileService.GetProfileInfo(router)
 	profileService.EditProfileInfo(router)
-	logoutService:= internal.NewLogoutService(c.client)
+	logoutService:= logout.NewLogoutService(c.client)
 	logoutService.Logout(router)
 
 	http.Handle("/auth/",router)

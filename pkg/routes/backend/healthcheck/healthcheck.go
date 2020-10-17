@@ -1,4 +1,4 @@
-package internal
+package healthcheck
 
 import (
 	"github.com/gorilla/mux"

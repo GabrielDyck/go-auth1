@@ -1,7 +1,7 @@
-package internal
+package auth
 
 import (
-	"auth1/pkg/routes/internal/auth"
+	"auth1/pkg/routes/internal"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -10,7 +10,7 @@ const (
 	authenticated               = "/authenticated"
 )
 
-func Authenticated(router *mux.Router, service auth.AuthService) {
+func Authenticated(router *mux.Router, service AuthService) {
 
 	router.HandleFunc(authenticated, func(w http.ResponseWriter, request *http.Request) {
 
@@ -19,7 +19,7 @@ func Authenticated(router *mux.Router, service auth.AuthService) {
 		isAuthenticated,err:=service.IsAuthorized(token)
 
 		if err !=nil{
-			WrapInternalErrorResponse(w,err)
+			internal.WrapInternalErrorResponse(w,err)
 			return
 		}
 
@@ -28,9 +28,11 @@ func Authenticated(router *mux.Router, service auth.AuthService) {
 		}
 
 
-		data, httpStatus := BuiltResponse(AlreadySignIn{
+		data, httpStatus := internal.BuiltResponse(AlreadySignIn{
 			Authenticated: isAuthenticated,
 		}, http.StatusOK)
-		WrapResponse(w,data,httpStatus)	}).Methods("GET")
+		internal.WrapResponse(w,data,httpStatus)
+
+	}).Methods("GET")
 
 }

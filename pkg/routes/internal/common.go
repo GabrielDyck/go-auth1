@@ -31,24 +31,23 @@ func BuiltResponse(response interface{}, statusCode int)([]byte ,int) {
 }
 
 
-func builtErrorBodyMsg(err error) api.ErrorMSG {
+func BuiltErrorBodyMsg(err error) api.ErrorMSG {
 	return api.ErrorMSG{Reason: err.Error()}
 }
 
 
 
-func ParseRequest(writer http.ResponseWriter, request *http.Request, bodyStruct interface {}) error {
+func ParseRequest(request *http.Request, bodyStruct interface {}) error {
 	body, err := ioutil.ReadAll(request.Body)
 
 	if err != nil {
-		WrapBadRequestResponse(writer, err)
 		return err
 	}
 
 	err = json.Unmarshal(body, bodyStruct)
 
 	if err != nil {
-		WrapBadRequestResponse(writer, err)
+		return  err
 	}
 	return err
 }
@@ -63,19 +62,19 @@ func WrapResponse(writer http.ResponseWriter,data []byte, httpStatus int) {
 
 
 func WrapInternalErrorResponse(writer http.ResponseWriter, err error) {
-	data, httpStatus := BuiltResponse(builtErrorBodyMsg(err), http.StatusInternalServerError)
+	data, httpStatus := BuiltResponse(BuiltErrorBodyMsg(err), http.StatusInternalServerError)
 	WrapResponse(writer,data,httpStatus)
 
 }
 
 func WrapBadRequestResponse(writer http.ResponseWriter, err error) {
-	data, httpStatus := BuiltResponse(builtErrorBodyMsg(err), http.StatusBadRequest)
+	data, httpStatus := BuiltResponse(BuiltErrorBodyMsg(err), http.StatusBadRequest)
 	WrapResponse(writer,data,httpStatus)
 
 }
 
 func WrapNotAllowedRequestResponse(writer http.ResponseWriter, err error) {
-	data, httpStatus := BuiltResponse(builtErrorBodyMsg(err), http.StatusMethodNotAllowed)
+	data, httpStatus := BuiltResponse(BuiltErrorBodyMsg(err), http.StatusMethodNotAllowed)
 	WrapResponse(writer,data,httpStatus)
 
 }

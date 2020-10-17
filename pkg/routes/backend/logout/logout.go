@@ -1,7 +1,8 @@
-package internal
+package logout
 
 import (
 	"auth1/pkg/mysql"
+	"auth1/pkg/routes/internal"
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -16,7 +17,7 @@ type logoutService struct {
 	db mysql.Logout
 }
 
-func NewLogoutService(db mysql.Logout) logoutService{
+func NewLogoutService(db mysql.Logout) logoutService {
 	return logoutService{
 		db: db,
 	}
@@ -29,23 +30,23 @@ func (l *logoutService) Logout(router *mux.Router) {
 		err := validateRequiredHeaders(token)
 
 		if err != nil {
-			WrapBadRequestResponse(writer, err)
+			internal.WrapBadRequestResponse(writer, err)
 			return
 		}
 
 		ok,err:= l.db.Logout(token)
 
 		if err != nil {
-			WrapInternalErrorResponse(writer, err)
+			internal.WrapInternalErrorResponse(writer, err)
 			return
 		}
 
 		if !ok{
-			WrapBadRequestResponse(writer, errors.New("token isn't available"))
+			internal.WrapBadRequestResponse(writer, errors.New("token isn't available"))
 			return
 		}
 
-		WrapOkEmptyResponse(writer)
+		internal.WrapOkEmptyResponse(writer)
 
 
 
