@@ -18,8 +18,6 @@ COPY main.go main.go
 
 RUN  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o auth1
 
-RUN ls
-
 FROM alpine:latest
 WORKDIR /app/
 EXPOSE 80
