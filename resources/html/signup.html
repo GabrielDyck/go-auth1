@@ -60,8 +60,8 @@
 
                 function callback(res) {
                     respBody = JSON.parse(res.responseText)
-                    document.cookie = "Authorization=" + res.getResponseHeader("Authorization");
-                    document.cookie = "User=" + respBody.id;
+                    document.cookie = "Authorization=" + res.getResponseHeader("Authorization")+";path=/";
+                    document.cookie = "User=" + respBody.id+";path=/";
                     window.location.replace("/edit-profile");
                 }
 

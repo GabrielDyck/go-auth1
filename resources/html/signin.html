@@ -40,9 +40,9 @@
                 data: JSON.stringify(data),
                 success: function (data, status, res) {
                     alert("Sign In Successfully")
-                    document.cookie = "Authorization=" + res.getResponseHeader("Authorization");
+                    document.cookie = "Authorization=" + res.getResponseHeader("Authorization")+";path=/";
                     respBody= JSON.parse(res.responseText)
-                    document.cookie = "User=" + respBody.id;
+                    document.cookie = "User=" + respBody.id+";path=/";
 
                     window.location.replace("/profile-info/"+respBody.id);
 
