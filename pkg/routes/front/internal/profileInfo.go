@@ -57,7 +57,9 @@ func (t *TemplateBuilder) inflateProfileInfoTemplate(rw http.ResponseWriter, req
 	var account api.Account
 	data, status := t.parseEditProfileTemplate(req)
 
-	if status != 0 {
+	if status ==http.StatusMethodNotAllowed {
+		rw.Write([]byte(templates.RedirectAuthenticationError))
+	}else if status != 0 {
 
 		tmpl, err := template.New("error.html").Parse(templates.ErrorTemplate)
 		if err != nil {
@@ -74,8 +76,6 @@ func (t *TemplateBuilder) inflateProfileInfoTemplate(rw http.ResponseWriter, req
 		if err != nil {
 			log.Println(err)
 		}
-	}else if status ==http.StatusMethodNotAllowed{
-		rw.Write([]byte(templates.RedirectAuthenticationError))
 	} else {
 		err := json.Unmarshal(data, &account)
 

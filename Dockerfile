@@ -26,4 +26,7 @@ EXPOSE 80
 
 COPY --from=build /app/auth1 .
 
+COPY resources resources
+
+COPY pkg/routes/front/internal/templates pkg/routes/front/internal/templates
 CMD ["/app/auth1"]
