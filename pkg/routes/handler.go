@@ -25,7 +25,7 @@ type CustomRouter struct {
 	authService   auth.AuthService
 }
 
-func NewCustomRouter(client mysql.Client, configuration config.Configuration) CustomRouter{
+func NewCustomRouter(client mysql.Client, configuration config.Configuration) CustomRouter {
 
 	return CustomRouter{
 		client:        client,
@@ -36,7 +36,7 @@ func NewCustomRouter(client mysql.Client, configuration config.Configuration) Cu
 
 func (c *CustomRouter) AddFrontendRoutes() {
 	htmlRouter := mux.NewRouter()
-	customRouter:= front.NewFrontRouter()
+	customRouter := front.NewFrontRouter()
 	customRouter.AddRoutes(htmlRouter)
 }
 func (c *CustomRouter) AddBackendRoutes(backendRouter *mux.Router, expirationDateInMin int, emailSender mail.Sender) {
@@ -49,16 +49,16 @@ func (c *CustomRouter) AddBackendRoutes(backendRouter *mux.Router, expirationDat
 	signInService := singin.NewSignInService(c.client)
 	signInService.AddRoutes(backendRouter)
 
-	signupService:= signup.NewSignUpService(c.client)
+	signupService := signup.NewSignUpService(c.client)
 	signupService.AddRoutes(backendRouter)
 
-	forgotService:= forgot.NewForgotPasswordService(c.client,expirationDateInMin, emailSender)
+	forgotService := forgot.NewForgotPasswordService(c.client, expirationDateInMin, emailSender)
 	forgotService.AddRoutes(backendRouter)
 
 	resetPasswordService := resetpassword.NewResetPasswordService(c.client)
 	resetPasswordService.AddRoutes(backendRouter)
 
-	http.Handle("/backend/",backendRouter)
+	http.Handle("/backend/", backendRouter)
 }
 func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {
 	router.Use(c.commonMiddleware)
@@ -66,13 +66,13 @@ func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {
 	profileService := profile.NewProfileInfoService(c.client, c.authService)
 	profileService.AddRoutes(router)
 
-	logoutService:= logout.NewLogoutService(c.client)
+	logoutService := logout.NewLogoutService(c.client)
 	logoutService.AddRoutes(router)
 
-	http.Handle("/auth/",router)
+	http.Handle("/auth/", router)
 }
 
-func (c *CustomRouter)commonMiddleware(next http.Handler) http.Handler {
+func (c *CustomRouter) commonMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		next.ServeHTTP(w, r)
@@ -81,20 +81,27 @@ func (c *CustomRouter)commonMiddleware(next http.Handler) http.Handler {
 
 func (c *CustomRouter) secureMiddleware(next http.Handler) http.Handler {
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := r.Header.Get("Authorization")
+	secure := func(request *http.Request) ([]byte, int) {
+		token := request.Header.Get("Authorization")
 		authenticated, err := c.authService.IsAuthorized(token)
 
-		if err !=nil{
-			internal.WrapInternalErrorResponse(w,err)
-			return
+		if err != nil {
+			return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusInternalServerError)
 		}
 
-		if !authenticated{
-			internal.WrapNotAllowedRequestResponse(w,errors.New("not Authenticated"))
-			return
+		if !authenticated {
+			return internal.BuiltResponse(internal.BuiltErrorBodyMsg(errors.New("not Authenticated")), http.StatusMethodNotAllowed)
 		}
+		return []byte{}, 0
+	}
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 
-		next.ServeHTTP(w, r)
+		resp, status := secure(request)
+		if status != 0 {
+			writer.WriteHeader(status)
+			writer.Write(resp)
+		} else {
+			next.ServeHTTP(writer, request)
+		}
 	})
 }

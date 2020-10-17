@@ -11,9 +11,6 @@ import (
 	"net/http"
 )
 
-
-
-
 func BuiltResponse(response interface{}, statusCode int)([]byte ,int) {
 
 	data , err :=json.Marshal(response)
@@ -65,24 +62,6 @@ func WrapInternalErrorResponse(writer http.ResponseWriter, err error) {
 	data, httpStatus := BuiltResponse(BuiltErrorBodyMsg(err), http.StatusInternalServerError)
 	WrapResponse(writer,data,httpStatus)
 
-}
-
-func WrapBadRequestResponse(writer http.ResponseWriter, err error) {
-	data, httpStatus := BuiltResponse(BuiltErrorBodyMsg(err), http.StatusBadRequest)
-	WrapResponse(writer,data,httpStatus)
-
-}
-
-func WrapNotAllowedRequestResponse(writer http.ResponseWriter, err error) {
-	data, httpStatus := BuiltResponse(BuiltErrorBodyMsg(err), http.StatusMethodNotAllowed)
-	WrapResponse(writer,data,httpStatus)
-
-}
-
-
-
-func WrapOkEmptyResponse(writer http.ResponseWriter) {
-	WrapResponse(writer,[]byte("{}"),http.StatusOK)
 }
 
 

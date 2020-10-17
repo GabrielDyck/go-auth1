@@ -15,7 +15,7 @@ type SignIn interface {
 
 
 func (c *client) IsBasicLoginGranted(email, password string) (bool, error) {
-	row, err := c.db.Query("SELECT COUNT(1) FROM ACCOUNTS WHERE ACCOUNT_TYPE =\"BASIC\" AND EMAIL = ? AND PASSWORD= ?;", email, password)
+	row, err := c.db.Query("SELECT COUNT(1) FROM ACCOUNTS WHERE EMAIL = ? AND ACCOUNT_TYPE =\"BASIC\" AND PASSWORD= ?;", email, password)
 
 	if err != nil {
 		return false, err
