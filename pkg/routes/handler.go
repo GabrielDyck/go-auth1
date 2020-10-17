@@ -41,9 +41,11 @@ func (c *CustomRouter) AddFrontendRoutes() {
 }
 func (c *CustomRouter) AddBackendRoutes(backendRouter *mux.Router, expirationDateInMin int, emailSender mail.Sender) {
 	backendRouter.Use(c.commonMiddleware)
-	auth.Authenticated(backendRouter,c.authService)
+
+	c.authService.AddRoutes(backendRouter)
 
 	healthcheck.HealthCheck(backendRouter)
+
 	signInService := singin.NewSignInService(c.client)
 	signInService.AddRoutes(backendRouter)
 
