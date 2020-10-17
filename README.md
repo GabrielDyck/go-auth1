@@ -10,6 +10,8 @@ Set SMTP_PASS environment value to send emails.
 Set DOMAIN environment value for reset link.
 
 Set ENVIRONMENT environment value to inform where the application is running.
+
+Set PORT environment value to run server.
 `
 export MYSQL_PASS=${{MYSQL_PASS}}
 export SMTP_PASS=${{SMTP_PASS}}
