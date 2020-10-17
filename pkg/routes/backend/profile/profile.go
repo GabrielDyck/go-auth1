@@ -36,108 +36,94 @@ func NewProfileInfoService(db mysql.Account, authService auth.AuthService) profi
 	}
 }
 
-func (s *profileInfoService) EditProfileInfo(router *mux.Router) {
-	router.HandleFunc(editProfilePath, func(writer http.ResponseWriter, request *http.Request) {
-		id, err := strconv.Atoi(mux.Vars(request)["id"])
+func (s *profileInfoService) editProfileInfo(request *http.Request) ([]byte, int) {
+	id, err := strconv.Atoi(mux.Vars(request)["id"])
+	if err != nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusBadRequest)
+	}
+
+	token := request.Header.Get("Authorization")
+
+	isAuthorized, err := s.authService.IsProfileEditorAuthorized(int64(id), token)
+
+	if err != nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusInternalServerError)
+	}
+
+	if !isAuthorized {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(errors.New("you are not authorized to edit a profile that is not belonging to you")), http.StatusBadRequest)
+	}
+
+	var req ProfileReq
+	err = internal.ParseRequest(request, &req)
+	if err != nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusBadRequest)
+	}
+	log.Println(id)
+	log.Println(req)
+
+	account, err := s.db.GetAccountById(int64(id))
+	if err != nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusInternalServerError)
+	}
+	if account == nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusBadRequest)
+	}
+
+	if req.Email != account.Email {
+
+		if account.AccountType == api.Google {
+			return internal.BuiltResponse(internal.BuiltErrorBodyMsg(errors.New("cannot edit email of an Google Account")), http.StatusBadRequest)
+		}
+
+		alreadyExist, err := s.db.AccountAlreadyExists(req.Email, account.AccountType)
 		if err != nil {
-			internal.WrapBadRequestResponse(writer, err)
-			return
+			return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusInternalServerError)
 		}
 
-		token:= request.Header.Get("Authorization")
-
-		isAuthorized,err:= s.authService.IsProfileAuthorized(int64(id),token)
-
-		if err!= nil{
-			internal.WrapInternalErrorResponse(writer,err)
-			return
+		if alreadyExist {
+			return internal.BuiltResponse(internal.BuiltErrorBodyMsg(errors.New("the email is already in use")), http.StatusBadRequest)
 		}
 
-		if !isAuthorized{
-			internal.WrapBadRequestResponse(writer,errors.New("you are not authorized to edit a profile that is not belonging to you"))
-			return
-		}
+	}
 
-		var req ProfileReq
-		err = internal.ParseRequest(writer, request, &req)
-		if err != nil {
-			return
-		}
-		log.Println(id)
-		log.Println(req)
+	err = s.db.EditProfileInfo(int64(id), req.Email, req.Address, req.Fullname, req.Phone)
+	if err != nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusInternalServerError)
+	}
 
-		account, err := s.getProfileInfo(int64(id))
-		if err != nil {
-			internal.WrapInternalErrorResponse(writer, err)
-			return
-		}
-		if account == nil{
-			internal.WrapBadRequestResponse(writer, err)
-			return
-		}
-
-		if req.Email != account.Email {
-
-			if account.AccountType == api.Google{
-				internal.WrapBadRequestResponse(writer, errors.New("cannot edit email of an Google Account"))
-				return
-			}
-
-			alreadyExist, err:= s.db.AccountAlreadyExists(req.Email, account.AccountType)
-			if err != nil {
-				internal.WrapInternalErrorResponse(writer, err)
-				return
-			}
-
-			if alreadyExist{
-				internal.WrapBadRequestResponse(writer, errors.New("the email is already in use"))
-				return
-			}
-
-		}
-
-		err= s.db.EditProfileInfo(int64(id),req.Email,req.Address,req.Fullname,req.Phone)
-		if err != nil {
-			internal.WrapInternalErrorResponse(writer, err)
-			return
-		}
-
-		data, httpStatus := internal.BuiltResponse(req, http.StatusOK)
-		internal.WrapResponse(writer, data, httpStatus)
-
-	}).Methods("POST")
-
+	return internal.BuiltResponse(req, http.StatusOK)
 }
 
-func (s *profileInfoService) GetProfileInfo(router *mux.Router) {
+func (s *profileInfoService) AddRoutes(router *mux.Router) {
+	router.HandleFunc(editProfilePath, func(writer http.ResponseWriter, request *http.Request) {
+		resp, status := s.editProfileInfo(request)
+		writer.WriteHeader(status)
+		writer.Write(resp)
+	}).Methods("POST")
 
 	router.HandleFunc(profilePath, func(writer http.ResponseWriter, request *http.Request) {
-		id, err := strconv.Atoi(mux.Vars(request)["id"])
-		if err != nil {
-			internal.WrapBadRequestResponse(writer, err)
-			return
-		}
-		log.Println(id)
-
-		account, err := s.getProfileInfo(int64(id))
-		if err != nil {
-			internal.WrapBadRequestResponse(writer, err)
-			return
-		}
-		data, httpStatus := internal.BuiltResponse(account, http.StatusOK)
-		internal.WrapResponse(writer, data, httpStatus)
+		resp, status := s.getProfileInfo(request)
+		writer.WriteHeader(status)
+		writer.Write(resp)
 	}).Methods("GET")
 
 }
 
-func (s *profileInfoService) getProfileInfo(id int64) (*api.Account, error) {
-	return s.db.GetAccountById(id)
-}
+func (s *profileInfoService) getProfileInfo( request *http.Request)([]byte, int) {
 
-func validateRequiredFields(req ProfileReq) error {
-
-	if req.Email == "" {
-		return errors.New("email cannot be empty")
+	id, err := strconv.Atoi(mux.Vars(request)["id"])
+	if err != nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusBadRequest)
 	}
-	return nil
+	log.Println(id)
+
+	account, err := s.db.GetAccountById(int64(id))
+	if err != nil {
+		return internal.BuiltResponse(internal.BuiltErrorBodyMsg(err), http.StatusBadRequest)
+	}
+
+	return internal.BuiltResponse(account, http.StatusOK)
+
 }
+

@@ -10,8 +10,8 @@ import (
 	"auth1/pkg/routes/backend/logout"
 	"auth1/pkg/routes/backend/profile"
 	"auth1/pkg/routes/backend/resetpassword"
+	"auth1/pkg/routes/backend/signup"
 	"auth1/pkg/routes/backend/singin"
-	"auth1/pkg/routes/backend/singup"
 	"auth1/pkg/routes/front"
 	"auth1/pkg/routes/internal"
 	"errors"
@@ -46,24 +46,27 @@ func (c *CustomRouter) AddBackendRoutes(backendRouter *mux.Router, expirationDat
 	signInService := singin.NewSignInService(c.client)
 
 	singin.SignIn(backendRouter, signInService)
-	singup.SignUp(backendRouter, c.client)
+
+
 	auth.Authenticated(backendRouter,c.authService)
 
 
+	signupService:= signup.NewSignUpService(c.client)
+	signupService.AddRoutes(backendRouter)
 
 	forgotService:= forgot.NewForgotPasswordService(c.client,expirationDateInMin, emailSender)
 	forgotService.AddRoutes(backendRouter)
 
-	resetpasswordService:= resetpassword.NewResetPasswordService(c.client)
-	resetpasswordService.AddRoutes(backendRouter)
+	resetPasswordService := resetpassword.NewResetPasswordService(c.client)
+	resetPasswordService.AddRoutes(backendRouter)
 	http.Handle("/backend/",backendRouter)
 }
 func (c *CustomRouter) AddAuthRoutes(router *mux.Router) {
 	router.Use(c.commonMiddleware)
 	router.Use(c.secureMiddleware)
 	profileService := profile.NewProfileInfoService(c.client, c.authService)
-	profileService.GetProfileInfo(router)
-	profileService.EditProfileInfo(router)
+	profileService.AddRoutes(router)
+
 	logoutService:= logout.NewLogoutService(c.client)
 	logoutService.Logout(router)
 
