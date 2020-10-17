@@ -74,9 +74,13 @@ func (c *client) GetProfileInfoByEmailAndAccountType(email string, accountType a
 func (c *client) Connect() {
 
 	db, err := sql.Open("mysql", c.builtDatasourceName())
+
+
 	if err != nil {
 		panic(fmt.Sprintf("couldn't open mysql connection. %v", err))
 	}
+	db.SetMaxIdleConns(50)
+	db.SetMaxIdleConns(100)
 	c.db = db
 }
 
