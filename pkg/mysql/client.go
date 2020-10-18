@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"os"
 	"sync"
+	"time"
 )
 
 type Client interface {
@@ -57,6 +58,8 @@ func (c *client) GetProfileInfoByEmailAndAccountType(email string, accountType a
 	if err != nil {
 		return nil, err
 	}
+	defer row.Close()
+
 	var account api.Account
 	if !row.Next() {
 		return nil, nil
@@ -80,7 +83,9 @@ func (c *client) Connect() {
 		panic(fmt.Sprintf("couldn't open mysql connection. %v", err))
 	}
 	db.SetMaxIdleConns(50)
-	db.SetMaxIdleConns(100)
+
+	db.SetMaxOpenConns(100)
+	db.SetConnMaxIdleTime(time.Duration(60)* time.Second)
 	c.db = db
 }
 

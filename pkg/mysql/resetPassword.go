@@ -32,6 +32,8 @@ func (c *client) GetForgotPasswordTokenByToken(token string) (*model.ForgotPassw
 	if err != nil {
 		return nil, err
 	}
+	defer row.Close()
+
 	var forgotPasswordToken model.ForgotPasswordToken
 	if !row.Next() {
 		return nil, nil

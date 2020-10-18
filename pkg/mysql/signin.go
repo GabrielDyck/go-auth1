@@ -20,6 +20,8 @@ func (c *client) IsBasicLoginGranted(email, password string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	defer row.Close()
+
 	var count int
 	if !row.Next() {
 		return false, nil

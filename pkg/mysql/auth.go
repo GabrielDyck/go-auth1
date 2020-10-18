@@ -12,6 +12,8 @@ func (c *client) IsAuthenticated(token string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	defer row.Close()
+
 	var count int
 	if !row.Next() {
 		return false, nil
@@ -32,6 +34,8 @@ func (c *client) IsProfileAuthorized(id int64, token string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	defer row.Close()
+
 	var accountId int64
 	if !row.Next() {
 		return false, nil

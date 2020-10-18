@@ -64,6 +64,8 @@ func (c *client) AccountAlreadyExists(email string,accountType api.AccountType) 
 	if err != nil {
 		return false, err
 	}
+
+	defer row.Close()
 	var count int
 	if !row.Next() {
 		return false, nil

@@ -17,6 +17,8 @@ func (c *client) GetAccountById(id int64) (*api.Account, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer row.Close()
+
 	var account api.Account
 	if !row.Next() {
 		return nil, nil
@@ -37,5 +39,6 @@ func (c *client) EditProfileInfo(accountId int64,email,address,fullname,phone st
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
