@@ -48,7 +48,7 @@ docker push gabrieldyck/auth1:latest
 ## Run Container from Docker Image
 
 `
-sudo docker run  --name auth1 --network host -d  -e MYSQL_PASS=${MYSQL_PASS}  -e SMTP_PASS=${{SMTP_PASS}} gabrieldyck/auth1:latest
+sudo docker run --name auth1 --network host -d -v ${{AUTH1-BE_FOLDER}}/resources/application.json:/home/ubuntu/resources/application.json -e MYSQL_PASS=${{MYSQL_PASS}} -e SMTP_PASS=${{SMTP_PASS}} -e DOMAIN='localhost' -e ENVIRONMET='local'   gabrieldyck/auth1:$1
 
 `
 
