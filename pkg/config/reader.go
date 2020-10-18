@@ -11,6 +11,8 @@ type mysql struct {
 	Address  string `json:"address"`
 	Username string `json:"username"`
 	Schema   string `json:"schema"`
+	MaxConnection int `json:"max_connection"`
+	MaxIdleConnection int `json:"max_idle_connection"`
 }
 
 type Configuration struct {

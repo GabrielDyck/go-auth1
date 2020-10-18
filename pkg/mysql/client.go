@@ -31,16 +31,20 @@ type client struct {
 	schema   string
 	username string
 	datetimeLayout string
+	maxConnection int
+	maxIdleConnection int
 
 	db *sql.DB
 }
 
-func NewClient(address, schema, username string) Client {
+func NewClient(address, schema, username string, maxConnection ,maxIdleConnection int) Client {
 	once.Do(func() {
 		instance = &client{
 			address:  address,
 			schema:   schema,
 			username: username,
+			maxConnection: maxConnection,
+			maxIdleConnection: maxIdleConnection,
 			datetimeLayout: "2006-01-02 15:04:05",
 
 		}
@@ -82,9 +86,9 @@ func (c *client) Connect() {
 	if err != nil {
 		panic(fmt.Sprintf("couldn't open mysql connection. %v", err))
 	}
-	db.SetMaxIdleConns(50)
+	db.SetMaxIdleConns(c.maxIdleConnection)
+	db.SetMaxOpenConns(c.maxConnection)
 
-	db.SetMaxOpenConns(100)
 	db.SetConnMaxIdleTime(time.Duration(60)* time.Second)
 	c.db = db
 }

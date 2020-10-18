@@ -12,7 +12,7 @@ type Application struct {
 func SetUpApplication(configuration config.Configuration) *Application {
 
 	return &Application{
-		Client: mysql.NewClient(configuration.Mysql.Address, configuration.Mysql.Schema, configuration.Mysql.Username),
+		Client: mysql.NewClient(configuration.Mysql.Address, configuration.Mysql.Schema, configuration.Mysql.Username, configuration.Mysql.MaxConnection,configuration.Mysql.MaxIdleConnection),
 	}
 
 }

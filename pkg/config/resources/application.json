@@ -3,6 +3,8 @@
   "mysql": {
     "address": "localhost:3306",
     "schema": "auth",
-    "username": "root"
+    "username": "root",
+    "maxIdleConnection": 100,
+    "maxConnection": 250
   }
 }
